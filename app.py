@@ -21,20 +21,30 @@ CORS(app)
 
 # Get MySQL connection details from environment variables (Railway)
 mysql_user = os.environ.get('MYSQLUSER', 'root')
-mysql_password = os.environ.get('MYSQLPASSWORD', 'ILKRkbCNCrcYWftbRSK1kjtAjWFQDelJ')
+mysql_password = os.environ.get('MYSQLPASSWORD', 'zgMuJZhGuNIFmCIQMDKGMEDxcETXZzZM')
 mysql_host = os.environ.get('MYSQLHOST', 'mysql.railway.internal')
 mysql_port = os.environ.get('MYSQLPORT', '3306')
 mysql_database = os.environ.get('MYSQLDATABASE', 'railway')
 
-# Build MySQL connection string
-database_url = f"mysql+pymysql://{mysql_user}:{mysql_password}@{mysql_host}:{mysql_port}/{mysql_database}"
+# Check if we have the public URL available (for cross-project connections)
+if os.environ.get('MYSQL_PUBLIC_URL'):
+    logger.info("Using MYSQL_PUBLIC_URL for database connection")
+    # Convert the URL format if needed
+    public_url = os.environ.get('MYSQL_PUBLIC_URL')
+    if public_url.startswith('mysql://'):
+        # Replace mysql:// with mysql+pymysql:// for SQLAlchemy
+        database_url = public_url.replace('mysql://', 'mysql+pymysql://', 1)
+    else:
+        database_url = public_url
+else:
+    # Build MySQL connection string from individual components
+    database_url = f"mysql+pymysql://{mysql_user}:{mysql_password}@{mysql_host}:{mysql_port}/{mysql_database}"
+    logger.info(f"Using MySQL database: {mysql_database} on {mysql_host}")
 
 # Fall back to SQLite for local development if MySQL variables aren't set
-if not all([mysql_user, mysql_password, mysql_host, mysql_port, mysql_database]):
+if not (os.environ.get('MYSQL_PUBLIC_URL') or all([mysql_user, mysql_password, mysql_host, mysql_port, mysql_database])):
     database_url = "sqlite:///participants.db"
     logger.info(f"Using SQLite database for local development: {database_url}")
-else:
-    logger.info(f"Using MySQL database: {mysql_database} on {mysql_host}")
 
 # Configure SQLAlchemy with pool_pre_ping to handle stale connections
 app.config['SQLALCHEMY_DATABASE_URI'] = database_url
