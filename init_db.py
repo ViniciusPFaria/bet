@@ -1,5 +1,5 @@
-from app import app, db
+from app import app, db, init_db
 
-with app.app_context():
-    db.create_all()
-    print("Database tables created successfully!") 
+print("Initializing database...")
+init_db()
+print("Database initialization complete!") 
