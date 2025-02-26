@@ -13,12 +13,25 @@ app = Flask(__name__)
 # Enable CORS for all routes
 CORS(app)
 
-# Configure SQLite database
-database_path = "sqlite:///participants.db"
-print(f"Using SQLite database: {database_path}")
+# Get MySQL connection details from environment variables (Railway)
+mysql_user = os.environ.get('MYSQLUSER', 'root')
+mysql_password = os.environ.get('MYSQLPASSWORD', 'ILKRkbCNCrcYWftbRSK1kjtAjWFQDelJ')
+mysql_host = os.environ.get('MYSQLHOST', 'mysql.railway.internal')
+mysql_port = os.environ.get('MYSQLPORT', '3306')
+mysql_database = os.environ.get('MYSQLDATABASE', 'railway')
+
+# Build MySQL connection string
+database_url = f"mysql+pymysql://{mysql_user}:{mysql_password}@{mysql_host}:{mysql_port}/{mysql_database}"
+
+# Fall back to SQLite for local development if MySQL variables aren't set
+if not all([mysql_user, mysql_password, mysql_host, mysql_port, mysql_database]):
+    database_url = "sqlite:///participants.db"
+    print(f"Using SQLite database for local development: {database_url}")
+else:
+    print(f"Using MySQL database: {mysql_database} on {mysql_host}")
 
 # Configure SQLAlchemy
-app.config['SQLALCHEMY_DATABASE_URI'] = database_path
+app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize SQLAlchemy with app
