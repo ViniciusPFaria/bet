@@ -13,27 +13,12 @@ app = Flask(__name__)
 # Enable CORS for all routes
 CORS(app)
 
-# Configure PostgreSQL connection
-database_url = os.environ.get('DATABASE_URL')
-print(f"Database URL: {database_url if database_url else 'Not set'}")
-
-# Check if the URL is the template variable (not replaced)
-if database_url and ('${{' in database_url or '}}' in database_url):
-    print(f"WARNING: DATABASE_URL contains template variables that weren't replaced: {database_url}")
-    print("Falling back to SQLite database")
-    database_url = "sqlite:///participants.db"
-
-# Fallback for missing database URL
-if not database_url:
-    print("WARNING: No DATABASE_URL found in environment, using SQLite database")
-    database_url = "sqlite:///participants.db"
-
-# Ensure correct URL format for PostgreSQL
-if database_url and database_url.startswith('postgres://'):
-    database_url = database_url.replace('postgres://', 'postgresql://', 1)
+# Configure SQLite database
+database_path = "sqlite:///participants.db"
+print(f"Using SQLite database: {database_path}")
 
 # Configure SQLAlchemy
-app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+app.config['SQLALCHEMY_DATABASE_URI'] = database_path
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize SQLAlchemy with app
@@ -182,25 +167,6 @@ def create_tables_with_retry(retries=5, delay=5):
 with app.app_context():
     create_tables_with_retry()
 
-# Before app startup, check if we can connect to the database
-def check_database_connection():
-    try:
-        # Try to connect to the database
-        engine = create_engine(database_url)
-        connection = engine.connect()
-        connection.close()
-        print("Successfully connected to the database")
-        return True
-    except Exception as e:
-        print(f"Failed to connect to database: {type(e).__name__}: {str(e)}")
-        return False
-
 # Only call this when explicitly running this file
 if __name__ == "__main__":
-    # Check database connection
-    if check_database_connection():
-        # Create database tables
-        create_tables_with_retry()
-    else:
-        print("WARNING: Starting without database connection")
     app.run(debug=True)
