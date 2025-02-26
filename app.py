@@ -13,6 +13,14 @@ database_url = os.environ.get('DATABASE_URL', '${{ Postgres.DATABASE_URL }}')
 if database_url and database_url.startswith('postgres://'):
     database_url = database_url.replace('postgres://', 'postgresql://', 1)
 
+# Add the pg8000 driver parameter to the URL
+if '?' not in database_url:
+    database_url += '?driver=pg8000'
+else:
+    database_url += '&driver=pg8000'
+
+print(f"Database URL (without password): {database_url.split('@')[0]}@...")
+
 # Configure SQLAlchemy
 app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -35,7 +43,12 @@ class Participant(db.Model):
 # Health check endpoint - simplest possible
 @app.route("/health")
 def health():
-    return "OK"
+    try:
+        # Try a simple database query to make sure connection works
+        Participant.query.limit(1).all()
+        return "OK - Database connected"
+    except Exception as e:
+        return f"Error connecting to database: {str(e)}", 500
 
 # Basic root endpoint
 @app.route("/")
@@ -110,8 +123,12 @@ def vencedor():
 # Function to create database tables
 def init_db():
     with app.app_context():
-        db.create_all()
-        print("Database tables created.")
+        try:
+            db.create_all()
+            print("Database tables created successfully.")
+        except Exception as e:
+            print(f"Error creating tables: {str(e)}")
+            raise
 
 # Only call this when explicitly running this file
 if __name__ == "__main__":
