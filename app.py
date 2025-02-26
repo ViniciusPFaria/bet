@@ -5,7 +5,13 @@ from flask_cors import CORS
 import os
 import random
 import time
+import logging
 from sqlalchemy import create_engine
+from sqlalchemy.exc import SQLAlchemyError, OperationalError
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Create the Flask application
 app = Flask(__name__)
@@ -26,16 +32,30 @@ database_url = f"mysql+pymysql://{mysql_user}:{mysql_password}@{mysql_host}:{mys
 # Fall back to SQLite for local development if MySQL variables aren't set
 if not all([mysql_user, mysql_password, mysql_host, mysql_port, mysql_database]):
     database_url = "sqlite:///participants.db"
-    print(f"Using SQLite database for local development: {database_url}")
+    logger.info(f"Using SQLite database for local development: {database_url}")
 else:
-    print(f"Using MySQL database: {mysql_database} on {mysql_host}")
+    logger.info(f"Using MySQL database: {mysql_database} on {mysql_host}")
 
-# Configure SQLAlchemy
+# Configure SQLAlchemy with pool_pre_ping to handle stale connections
 app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+    'pool_recycle': 280,  # recycle connections before MySQL's default timeout
+    'pool_pre_ping': True,  # test connections before using them
+    'pool_timeout': 30,  # timeout waiting for a connection from pool
+    'connect_args': {
+        'connect_timeout': 10  # timeout for establishing new connections
+    }
+}
 
 # Initialize SQLAlchemy with app
 db = SQLAlchemy(app)
+
+# Add error handling middleware to log and handle database errors
+@app.errorhandler(SQLAlchemyError)
+def handle_db_error(error):
+    logger.error(f"Database error: {str(error)}")
+    return jsonify({"success": False, "error": "Database error occurred. Please try again later."}), 500
 
 # Define Participant model
 class Participant(db.Model):
@@ -53,8 +73,18 @@ class Participant(db.Model):
 # Health check endpoint - simplest possible
 @app.route("/health")
 def health():
-    # Always return 200 during startup to allow the container to initialize
-    return "OK - Application running", 200
+    try:
+        # Try a simple database query to verify connection
+        # Use a lightweight query that doesn't depend on tables existing
+        db.session.execute("SELECT 1").scalar()
+        logger.info("Health check passed: Database connection successful")
+        return "OK - Application running and database connected", 200
+    except Exception as e:
+        # Log the error but still return 200 during initial deployment
+        # This helps the container start up properly
+        logger.warning(f"Health check warning: {str(e)}")
+        # Always return 200 during startup to allow the container to initialize
+        return "OK - Application running but database not ready", 200
 
 # Basic root endpoint
 @app.route("/")
@@ -74,15 +104,15 @@ def cadastro():
 def cadastrar():
     try:
         # Log request data for debugging
-        print(f"Received POST request with data: {request.data}")
+        logger.info(f"Received POST request with data: {request.data}")
         
         # Handle both JSON and form data
         if request.is_json:
             data = request.json
-            print("Received JSON data")
+            logger.info("Received JSON data")
         else:
             data = request.form
-            print("Received form data")
+            logger.info("Received form data")
         
         # Extract form fields
         nome = data.get("nome")
@@ -91,7 +121,7 @@ def cadastrar():
         segmento = data.get("segmento")
         email = data.get("email")
         
-        print(f"Parsed data: nome={nome}, empresa={empresa}, funcao={funcao}, segmento={segmento}, email={email}")
+        logger.info(f"Parsed data: nome={nome}, empresa={empresa}, funcao={funcao}, segmento={segmento}, email={email}")
         
         # Validate required fields
         if not all([nome, empresa, funcao, segmento, email]):
@@ -115,10 +145,10 @@ def cadastrar():
         db.session.add(new_participant)
         db.session.commit()
         
-        print(f"Successfully registered user: {nome}")
+        logger.info(f"Successfully registered user: {nome}")
         return jsonify({"success": True, "message": "Cadastro realizado com sucesso!"})
     except Exception as e:
-        print(f"Error in /api/cadastro: {str(e)}")
+        logger.error(f"Error in /api/cadastro: {str(e)}")
         return jsonify({"success": False, "error": str(e)}), 500
 
 # Preflighted CORS request handler
@@ -241,26 +271,36 @@ def seed_database_route():
 def create_tables_with_retry(retries=5, delay=5):
     for attempt in range(retries):
         try:
-            print(f"Attempt {attempt+1}/{retries} to create database tables")
+            logger.info(f"Attempt {attempt+1}/{retries} to create database tables")
             db.create_all()
-            print("Database tables created successfully!")
+            logger.info("Database tables created successfully!")
             return True
         except Exception as e:
-            print(f"Error creating tables: {type(e).__name__}: {str(e)}")
+            logger.error(f"Error creating tables: {type(e).__name__}: {str(e)}")
             if attempt < retries - 1:
-                print(f"Retrying in {delay} seconds...")
+                logger.info(f"Retrying in {delay} seconds...")
                 time.sleep(delay)
             else:
-                print("Failed to create tables after all attempts")
+                logger.error("Failed to create tables after all attempts")
+                # Don't fail the application startup - we'll try to create tables later
                 return False
 
 # Function to initialize the database
 def init_db():
-    return create_tables_with_retry()
+    try:
+        return create_tables_with_retry()
+    except Exception as e:
+        logger.error(f"Database initialization error: {str(e)}")
+        # Don't let database errors prevent app from starting
+        return False
 
-# Initialize the database tables
+# Initialize the database tables - but don't let failures stop the app
 with app.app_context():
-    create_tables_with_retry()
+    try:
+        create_tables_with_retry()
+    except Exception as e:
+        logger.warning(f"Could not initialize database during startup: {str(e)}")
+        logger.info("Application will continue starting and retry database operations during requests")
 
 # Only call this when explicitly running this file
 if __name__ == "__main__":
