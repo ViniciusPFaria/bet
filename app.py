@@ -5,6 +5,7 @@ from flask_cors import CORS
 import os
 import random
 import time
+from sqlalchemy import create_engine
 
 # Create the Flask application
 app = Flask(__name__)
@@ -14,6 +15,7 @@ CORS(app)
 
 # Configure PostgreSQL connection
 database_url = os.environ.get('DATABASE_URL')
+print(f"Database URL: {database_url if database_url else 'Not set'}")
 
 # Check if the URL is the template variable (not replaced)
 if database_url and ('${{' in database_url or '}}' in database_url):
@@ -52,14 +54,8 @@ class Participant(db.Model):
 # Health check endpoint - simplest possible
 @app.route("/health")
 def health():
-    try:
-        # Try a simple database query to make sure connection works
-        Participant.query.limit(1).all()
-        return "OK - Database connected"
-    except Exception as e:
-        # Don't fail health check on DB error to allow app to start
-        print(f"Health check warning: {str(e)}")
-        return "OK - Application running, but database not connected", 200
+    # Always return 200 during startup to allow the container to initialize
+    return "OK - Application running", 200
 
 # Basic root endpoint
 @app.route("/")
@@ -165,7 +161,7 @@ def create_tables_with_retry(retries=5, delay=5):
                 print("Database tables created successfully!")
                 return True
             except Exception as e:
-                print(f"Error creating tables: {str(e)}")
+                print(f"Error creating tables: {type(e).__name__}: {str(e)}")
                 if attempt < retries - 1:
                     print(f"Retrying in {delay} seconds...")
                     time.sleep(delay)
@@ -173,8 +169,25 @@ def create_tables_with_retry(retries=5, delay=5):
                     print("Failed to create tables after all attempts")
                     return False
 
+# Before app startup, check if we can connect to the database
+def check_database_connection():
+    try:
+        # Try to connect to the database
+        engine = create_engine(database_url)
+        connection = engine.connect()
+        connection.close()
+        print("Successfully connected to the database")
+        return True
+    except Exception as e:
+        print(f"Failed to connect to database: {type(e).__name__}: {str(e)}")
+        return False
+
 # Only call this when explicitly running this file
 if __name__ == "__main__":
-    # Create database tables
-    create_tables_with_retry()
+    # Check database connection
+    if check_database_connection():
+        # Create database tables
+        create_tables_with_retry()
+    else:
+        print("WARNING: Starting without database connection")
     app.run(debug=True)
