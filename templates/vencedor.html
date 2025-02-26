@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vencedor - 1XBET</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <div class="logo-container">
+        <img src="{{ url_for('static', filename='imagens/1xBet_Logo_rgb.png') }}" alt="1XBET Logo" class="logo">
+    </div>
+
+    <h2 class="form-title">GANHADOR</h2>
+
+    <div class="container">
+        <div class="winner-box">
+            <p id="nomeVencedor">{{ vencedor }}</p>
+        </div>
+        <button onclick="sortearNovo()">Sortear Novo</button>
+    </div>
+
+    <script>
+        async function sortearNovo() {
+            try {
+                const response = await fetch("/sorteio");
+                const html = await response.text();
+                document.body.innerHTML = html;
+            } catch (error) {
+                console.error("Erro ao sortear novo vencedor:", error);
+            }
+        }
+    </script>
+
+</body>
+</html>

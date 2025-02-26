@@ -1,0 +1,206 @@
+@font-face {
+    font-family: Roboto;
+    src: url(/fontes/Roboto-Italic-VariableFont_wdth\,wght.ttf);
+}
+
+/* Reset geral */
+body {
+    font-family: Roboto, sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #0073E6; /* Fundo azul vibrante */
+    margin: 0;
+}
+
+/* Logo */
+.logo-container {
+    margin-bottom: 10px;
+    text-align: center; /* Centraliza a logo */
+}
+
+.logo {
+    width: 100%; /* Ajusta a largura da logo */
+    max-width: 500px; /* Define um tamanho máximo */
+    height: auto;
+    margin-top: 0px;
+}
+
+/* Ajuste do texto acima do formulário */
+.text-container {
+    text-align: center;
+    width: 90%; /* Ajusta a largura para telas menores */
+    max-width: 350px; /* Mesmo tamanho do formulário */
+    margin: 0 auto 10px auto; /* Centraliza e dá um pequeno espaçamento */
+}
+
+/* Título do formulário */
+.form-title {
+    color: white;
+    font-size: 18px; /* Fonte menor */
+    font-weight: bold;
+    text-align: center;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+/* Subtítulo */
+.form-subtitle {
+    font-size: 14px; /* Fonte menor */
+    text-align: center;
+    margin-bottom: 15px;
+    color: white;
+}
+
+/* Texto em inglês */
+.english-text {
+    color: #004080; /* Azul escuro */
+    font-size: 13px;
+}
+
+/* Formulário */
+.form-container {
+    background: #005bb5; /* Azul mais escuro */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 90%; /* Ajusta a largura para telas menores */
+    max-width: 350px; /* Define um tamanho máximo */
+    margin: 0 auto; /* Centraliza o formulário */
+}
+
+/* Campos de entrada */
+.input-container {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #004080; /* Azul mais escuro para bordas */
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box;
+    background-color: white;
+    font-family: 'Roboto', sans-serif;
+    outline: none;
+}
+
+/* Placeholder */
+input::placeholder {
+    color: black;
+    font-size: 13.5px;
+}
+
+/* Ajuste da checkbox */
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 2px; /* Diminui ainda mais o espaço entre a checkbox e o texto */
+    margin-top: 10px;
+}
+
+.checkbox-container input {
+    width: 14px; /* Checkbox menor */
+    height: 14px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.checkbox-label {
+    font-size: 12px; /* Fonte menor */
+    font-weight: normal;
+    color: white;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+}
+
+/* Botão de Envio */
+button {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    background-color: #004080; /* Azul mais escuro */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+    font-family: 'Roboto', sans-serif;
+}
+
+/* Botão desativado */
+button:disabled {
+    background-color: rgba(0, 64, 128, 0.5);
+    cursor: not-allowed;
+}
+
+/* Media Queries para Responsividade */
+
+/* Tablets e telas menores */
+@media (max-width: 768px) {
+    .logo {
+        max-width: 400px; /* Reduz o tamanho da logo */
+    }
+
+    .form-container {
+        padding: 15px; /* Reduz o padding */
+    }
+
+    .form-title {
+        font-size: 16px; /* Reduz o tamanho da fonte */
+    }
+
+    .form-subtitle, .english-text {
+        font-size: 12px; /* Reduz o tamanho da fonte */
+    }
+
+    input {
+        padding: 10px; /* Reduz o padding dos inputs */
+        font-size: 14px;
+    }
+
+    button {
+        padding: 10px; /* Reduz o padding do botão */
+        font-size: 14px;
+    }
+}
+
+/* Dispositivos móveis (smartphones) */
+@media (max-width: 480px) {
+    .logo {
+        max-width: 300px; /* Reduz ainda mais o tamanho da logo */
+    }
+
+    .form-container {
+        width: 95%; /* Aumenta a largura para ocupar mais espaço */
+        padding: 10px;
+    }
+
+    .form-title {
+        font-size: 14px; /* Reduz o tamanho da fonte */
+    }
+
+    .form-subtitle, .english-text {
+        font-size: 11px; /* Reduz o tamanho da fonte */
+    }
+
+    input {
+        padding: 8px; /* Reduz o padding dos inputs */
+        font-size: 12px;
+    }
+
+    button {
+        padding: 8px; /* Reduz o padding do botão */
+        font-size: 12px;
+    }
+
+    .checkbox-label {
+        font-size: 10px; /* Reduz o tamanho da fonte da checkbox */
+    }
+}

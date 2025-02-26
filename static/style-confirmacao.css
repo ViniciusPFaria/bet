@@ -1,0 +1,80 @@
+@font-face {
+    font-family: Roboto;
+    src: url(/fontes/Roboto-Italic-VariableFont_wdth\,wght.ttf);
+}
+
+/* Reset geral */
+body {
+    font-family: Roboto, sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #0073E6; /* Fundo azul vibrante */
+    margin: 0;
+}
+
+/* Logo */
+.logo-container {
+    margin-bottom: 10px;
+    display:flex ;
+}
+
+.logo {
+    width: 150px; /* Tamanho ajustado da logo */
+    height: auto;
+    margin-top: 0px;
+    display: flex;
+}
+
+/* Container do texto */
+.text-container {
+    background-color: #29A7F1; /* Azul levemente mais claro */
+    padding: 20px;
+    width: 320px; /* Mesmo tamanho da imagem */
+    border-radius: 10px;
+    text-align: center;
+}
+
+/* Título principal */
+.form-title {
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    text-transform: uppercase;
+    margin-bottom: 15px;
+}
+
+/* Texto principal em português */
+.form-text {
+    color: white;
+    font-size: 14px;
+    text-align: center;
+    line-height: 1.5;
+    margin-bottom: 15px;
+}
+
+/* Destaque para "BOA SORTE!" */
+.form-highlight {
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    text-transform: uppercase;
+    margin-top: 15px;
+}
+
+/* Texto em inglês */
+.form-subtext {
+    text-align: center;
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 10px;
+}
+
+.english-text {
+    color: #004080; /* Azul escuro para o texto em inglês */
+    font-size: 13px;
+}
