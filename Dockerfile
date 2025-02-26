@@ -9,9 +9,17 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY . .
 
+# Ensure code.txt is properly copied and has the right permissions
+RUN ls -la
+RUN cat code.txt > /app/code.txt.temp && mv /app/code.txt.temp /app/code.txt
+RUN chmod 644 /app/code.txt
+RUN echo "Checking if code.txt is present:" && ls -la /app/code.txt
+
 # Create a script to initialize the database and start the application
 RUN echo '#!/bin/bash \n\
 echo "Initializing database..." \n\
+echo "Checking if code.txt exists:" \n\
+ls -la /app/code.txt \n\
 python init_db.py \n\
 \n\
 # Start Gunicorn \n\

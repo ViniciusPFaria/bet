@@ -125,8 +125,28 @@ def sorteio():
         # Get all participants from the database
         participants = Participant.query.all()
         
+        # If no participants found, try to seed the database
         if not participants:
-            return render_template("vencedor.html", vencedor="Nenhum participante cadastrado", index="0")
+            print("No participants found in database, attempting to seed from code.txt...")
+            try:
+                from seed_db import seed_database
+                with app.app_context():
+                    seed_success = seed_database()
+                    if seed_success:
+                        # Query again after seeding
+                        participants = Participant.query.all()
+                        print(f"Database seeded successfully, now has {len(participants)} participants")
+                    else:
+                        print("Database seeding failed")
+            except Exception as seed_error:
+                print(f"Error while trying to seed database: {str(seed_error)}")
+        
+        # After potential seeding, check participants again
+        if not participants:
+            return render_template("vencedor.html", 
+                                  vencedor="Nenhum participante cadastrado. Por favor, verifique o banco de dados.", 
+                                  index="0",
+                                  error="Database is empty. Please ensure code.txt is properly formatted and accessible.")
         
         # Choose a random winner and get their index in the list
         winner_index = random.randint(0, len(participants) - 1)
@@ -137,7 +157,11 @@ def sorteio():
 
         return render_template("vencedor.html", vencedor=vencedor, index=display_index)
     except Exception as e:
-        return f"Error in sorteio: {str(e)}", 500
+        print(f"Error in sorteio route: {str(e)}")
+        return render_template("vencedor.html", 
+                              vencedor="Erro ao processar o sorteio", 
+                              index="?",
+                              error=str(e))
 
 # Página do vencedor
 @app.route("/vencedor")
@@ -149,9 +173,56 @@ def vencedor():
 def participantes():
     try:
         participants = Participant.query.all()
+        
+        # If no participants found, try to seed the database
+        if not participants:
+            print("No participants found in database, attempting to seed from code.txt...")
+            try:
+                from seed_db import seed_database
+                with app.app_context():
+                    seed_success = seed_database()
+                    if seed_success:
+                        # Query again after seeding
+                        participants = Participant.query.all()
+                        print(f"Database seeded successfully, now has {len(participants)} participants")
+                    else:
+                        print("Database seeding failed")
+            except Exception as seed_error:
+                print(f"Error while trying to seed database: {str(seed_error)}")
+        
         return render_template("participantes.html", participants=participants)
     except Exception as e:
-        return f"Error retrieving participants: {str(e)}", 500
+        print(f"Error retrieving participants: {str(e)}")
+        return render_template("participantes.html", 
+                              participants=[],
+                              error=f"Error retrieving participants: {str(e)}")
+
+# Special route to seed database from code.txt
+@app.route("/api/seed", methods=["GET"])
+def seed_database_route():
+    try:
+        # Import the seed function dynamically to avoid circular imports
+        from seed_db import seed_database
+        
+        with app.app_context():
+            success = seed_database()
+            
+        if success:
+            return jsonify({
+                "success": True,
+                "message": "Database has been seeded successfully",
+                "participant_count": Participant.query.count()
+            })
+        else:
+            return jsonify({
+                "success": False,
+                "message": "Failed to seed database. Check server logs for details."
+            }), 500
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
 
 # Create database tables with retry mechanism
 def create_tables_with_retry(retries=5, delay=5):

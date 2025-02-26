@@ -72,6 +72,34 @@
         .draw-button {
             margin-top: 20px;
         }
+        
+        .error-message {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef5350;
+            padding: 15px;
+            margin: 20px auto;
+            max-width: 800px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        .action-button {
+            background-color: #1976d2;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+            margin-left: 10px;
+        }
+        
+        .action-button:hover {
+            background-color: #1565c0;
+        }
     </style>
 </head>
 <body>
@@ -80,6 +108,15 @@
     </div>
 
     <h2 class="form-title">GANHADOR</h2>
+
+    {% if error %}
+    <div class="error-message">
+        <p><strong>Erro / Error:</strong> {{ error }}</p>
+        <p>Tente carregar a página novamente ou contate o administrador.</p>
+        <p>Try refreshing the page or contact the administrator.</p>
+        <a href="/api/seed" class="action-button">Tentar Carregar Dados / Try Loading Data</a>
+    </div>
+    {% endif %}
 
     <div class="container">
         <div class="winner-box" id="winner-box">

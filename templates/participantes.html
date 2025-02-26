@@ -74,6 +74,45 @@
         .back-button:hover {
             background-color: #c71017;
         }
+        
+        .error-message {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef5350;
+            padding: 15px;
+            margin: 20px auto;
+            max-width: 800px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        .empty-message {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #66bb6a;
+            padding: 15px;
+            margin: 20px auto;
+            max-width: 800px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        .action-button {
+            background-color: #1976d2;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+            margin-left: 10px;
+        }
+        
+        .action-button:hover {
+            background-color: #1565c0;
+        }
     </style>
 </head>
 <body>
@@ -88,12 +127,32 @@
         </h3>
     </div>
 
+    {% if error %}
+    <div class="error-message">
+        <p><strong>Erro / Error:</strong> {{ error }}</p>
+        <p>Tente carregar a página novamente ou contate o administrador.</p>
+        <p>Try refreshing the page or contact the administrator.</p>
+        <a href="/api/seed" class="action-button">Tentar Carregar Dados / Try Loading Data</a>
+    </div>
+    {% endif %}
+
     <div class="count-container">
         <div class="participant-count">
             Total de participantes: {{ participants|length }}
         </div>
     </div>
 
+    {% if participants|length == 0 and not error %}
+    <div class="empty-message">
+        <p><strong>Nenhum participante cadastrado.</strong></p>
+        <p>Não há participantes cadastrados no sistema. Você pode adicionar participantes manualmente ou carregar os dados iniciais.</p>
+        <p><strong>No participants registered.</strong></p>
+        <p>There are no participants registered in the system. You can add participants manually or load initial data.</p>
+        <a href="/api/seed" class="action-button">Carregar Dados Iniciais / Load Initial Data</a>
+    </div>
+    {% endif %}
+
+    {% if participants|length > 0 %}
     <table class="participants-table">
         <thead>
             <tr>
@@ -116,6 +175,7 @@
             {% endfor %}
         </tbody>
     </table>
+    {% endif %}
 
     <div class="button-container">
         <a href="/" class="back-button">Voltar / Back</a>
