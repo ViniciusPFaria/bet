@@ -1,11 +1,16 @@
 from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.exceptions import BadRequest
+from flask_cors import CORS
 import os
 import random
 import time
 
 # Create the Flask application
 app = Flask(__name__)
+
+# Enable CORS for all routes
+CORS(app)
 
 # Configure PostgreSQL connection
 database_url = os.environ.get('DATABASE_URL')
@@ -73,12 +78,29 @@ def cadastro():
 @app.route("/api/cadastro", methods=["POST"])
 def cadastrar():
     try:
-        data = request.json
-        nome = data["nome"]
-        empresa = data["empresa"]
-        funcao = data["funcao"]
-        segmento = data["segmento"]
-        email = data["email"]
+        # Log request data for debugging
+        print(f"Received POST request with data: {request.data}")
+        
+        # Handle both JSON and form data
+        if request.is_json:
+            data = request.json
+            print("Received JSON data")
+        else:
+            data = request.form
+            print("Received form data")
+        
+        # Extract form fields
+        nome = data.get("nome")
+        empresa = data.get("empresa")
+        funcao = data.get("funcao")
+        segmento = data.get("segmento")
+        email = data.get("email")
+        
+        print(f"Parsed data: nome={nome}, empresa={empresa}, funcao={funcao}, segmento={segmento}, email={email}")
+        
+        # Validate required fields
+        if not all([nome, empresa, funcao, segmento, email]):
+            return jsonify({"success": False, "message": "Todos os campos são obrigatórios"}), 400
 
         # Check if participant with this email already exists
         existing_participant = Participant.query.filter_by(email=email).first()
@@ -97,10 +119,17 @@ def cadastrar():
         # Add to database
         db.session.add(new_participant)
         db.session.commit()
-
-        return jsonify({"success": True})
+        
+        print(f"Successfully registered user: {nome}")
+        return jsonify({"success": True, "message": "Cadastro realizado com sucesso!"})
     except Exception as e:
+        print(f"Error in /api/cadastro: {str(e)}")
         return jsonify({"success": False, "error": str(e)}), 500
+
+# Preflighted CORS request handler
+@app.route("/api/cadastro", methods=["OPTIONS"])
+def cadastrar_preflight():
+    return "", 200
 
 # Página de confirmação
 @app.route("/confirmacao")
