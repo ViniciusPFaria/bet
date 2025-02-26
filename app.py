@@ -4,22 +4,35 @@ import os
 import random
 import re
 
-app = Flask(__name__)
+# Initialize SQLAlchemy without app first
+db = SQLAlchemy()
 
-# Configure PostgreSQL connection using Railway provided URL
-# Get database URL from environment or use the Railway template
-database_url = os.getenv('DATABASE_URL', '${{ Postgres.DATABASE_URL }}')
+def create_app():
+    app = Flask(__name__)
+    
+    # Configure PostgreSQL connection using Railway provided URL
+    # Get database URL from environment or use the Railway template
+    database_url = os.getenv('DATABASE_URL', '${{ Postgres.DATABASE_URL }}')
+    
+    # If the URL starts with postgres:// (Railway format), convert to postgresql://
+    if database_url.startswith('postgres://'):
+        database_url = database_url.replace('postgres://', 'postgresql://', 1)
+    
+    # Configure SQLAlchemy to use pg8000 as the driver
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    
+    # Initialize SQLAlchemy with the app
+    db.init_app(app)
+    
+    # Create all tables within app context
+    with app.app_context():
+        db.create_all()
+    
+    return app
 
-# If the URL starts with postgres:// (Railway format), convert to postgresql://
-if database_url.startswith('postgres://'):
-    database_url = database_url.replace('postgres://', 'postgresql://', 1)
-
-# Configure SQLAlchemy to use pg8000 as the driver
-app.config['SQLALCHEMY_DATABASE_URI'] = database_url + "?driver=pg8000"
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-# Initialize SQLAlchemy
-db = SQLAlchemy(app)
+# Create the Flask application
+app = create_app()
 
 # Define Participant model
 class Participant(db.Model):
@@ -33,15 +46,15 @@ class Participant(db.Model):
     def __repr__(self):
         return f'<Participant {self.nome}>'
 
-# Create database tables
-@app.before_first_request
-def create_tables():
-    db.create_all()
-
 # Página de cadastro
 @app.route("/")
 def cadastro():
     return render_template("cadastro.html")
+
+# Health check endpoint for Railway
+@app.route("/health")
+def health():
+    return jsonify({"status": "ok"})
 
 # Endpoint para cadastrar participantes
 @app.route("/api/cadastro", methods=["POST"])
