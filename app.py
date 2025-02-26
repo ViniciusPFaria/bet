@@ -152,6 +152,15 @@ def sorteio():
 def vencedor():
     return render_template("vencedor.html", vencedor="Aguardando sorteio")
 
+# Página para listar todos os participantes
+@app.route("/participantes")
+def participantes():
+    try:
+        participants = Participant.query.all()
+        return render_template("participantes.html", participants=participants)
+    except Exception as e:
+        return f"Error retrieving participants: {str(e)}", 500
+
 # Create database tables with retry mechanism
 def create_tables_with_retry(retries=5, delay=5):
     for attempt in range(retries):

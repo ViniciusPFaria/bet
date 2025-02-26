@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Participantes - 1XBET</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .participants-table {
+            width: 100%;
+            max-width: 800px;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .participants-table th, .participants-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .participants-table th {
+            background-color: #ed1c24;
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .participants-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        .participants-table tr:hover {
+            background-color: #e9e9e9;
+        }
+        
+        .participant-count {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        
+        .count-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .back-button {
+            background-color: #ed1c24;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .back-button:hover {
+            background-color: #c71017;
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-container">
+        <img src="{{ url_for('static', filename='imagens/1xBet_Logo_rgb.png') }}" alt="1XBET Logo" class="logo">
+    </div>
+
+    <div class="text-container">
+        <h2 class="form-title">LISTA DE PARTICIPANTES</h2>
+        <h3 class="form-subtitle">
+            <span class="english-text">List of Participants</span>
+        </h3>
+    </div>
+
+    <div class="count-container">
+        <div class="participant-count">
+            Total de participantes: {{ participants|length }}
+        </div>
+    </div>
+
+    <table class="participants-table">
+        <thead>
+            <tr>
+                <th>Nome / Name</th>
+                <th>Empresa / Company</th>
+                <th>Função / Job Title</th>
+                <th>Segmento / Business Type</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for participant in participants %}
+            <tr>
+                <td>{{ participant.nome }}</td>
+                <td>{{ participant.empresa }}</td>
+                <td>{{ participant.funcao }}</td>
+                <td>{{ participant.segmento }}</td>
+                <td>{{ participant.email }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="button-container">
+        <a href="/" class="back-button">Voltar / Back</a>
+    </div>
+</body>
+</html> 
