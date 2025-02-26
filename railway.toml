@@ -9,6 +9,10 @@ restartPolicyMaxRetries = 5
 healthcheckPath = "/health"
 healthcheckTimeout = 10
 
+# Define the environment variable for the application
+[variables]
+DATABASE_URL = "${{ Postgres.DATABASE_URL }}"
+
 [nixpacks]
 features = ["python"]
 
@@ -22,4 +26,7 @@ installCommand = "pip install --no-cache-dir -r requirements.txt"
 #
 # [deploy]
 # healthcheckPath = "/health"
-# healthcheckTimeout = 10 
+# healthcheckTimeout = 10
+#
+# [variables]
+# DATABASE_URL = "${{ Postgres.DATABASE_URL }}" 

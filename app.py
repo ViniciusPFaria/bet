@@ -7,19 +7,31 @@ import random
 app = Flask(__name__)
 
 # Configure PostgreSQL connection
-database_url = os.environ.get('DATABASE_URL', '${{ Postgres.DATABASE_URL }}')
+# IMPORTANT: On Railway, set DATABASE_URL in the environment variables section
+# Do not use the template format in the code
+database_url = os.environ.get('DATABASE_URL')
 
-# Ensure correct URL format
+# Fallback for local development (this won't be used on Railway)
+if not database_url:
+    print("WARNING: No DATABASE_URL found in environment, using development database")
+    database_url = "sqlite:///participants.db"
+
+# Ensure correct URL format if it's a PostgreSQL URL
 if database_url and database_url.startswith('postgres://'):
     database_url = database_url.replace('postgres://', 'postgresql://', 1)
 
-# Add the pg8000 driver parameter to the URL
-if '?' not in database_url:
-    database_url += '?driver=pg8000'
-else:
-    database_url += '&driver=pg8000'
+# Add pg8000 driver parameter only for PostgreSQL URLs, not for SQLite
+if database_url and 'postgresql://' in database_url:
+    if '?' not in database_url:
+        database_url += '?driver=pg8000'
+    else:
+        database_url += '&driver=pg8000'
 
-print(f"Database URL (without password): {database_url.split('@')[0]}@...")
+# Safety: Don't print full URL as it contains password
+if database_url and '@' in database_url:
+    print(f"Database URL (without password): {database_url.split('@')[0]}@...")
+else:
+    print(f"Using database: {database_url}")
 
 # Configure SQLAlchemy
 app.config['SQLALCHEMY_DATABASE_URI'] = database_url
