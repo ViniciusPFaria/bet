@@ -1,11 +1,18 @@
 from app import app, db, init_db
 import sys
+from seed_db import seed_database
 
 print("Initializing database...")
 
 try:
     init_db()
     print("Database initialization complete!")
+    
+    # Seed the database with initial data
+    print("Seeding database with initial data...")
+    with app.app_context():
+        seed_database()
+    
 except Exception as e:
     print(f"ERROR: Failed to initialize database: {str(e)}")
     

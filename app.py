@@ -170,6 +170,10 @@ def create_tables_with_retry(retries=5, delay=5):
                 print("Failed to create tables after all attempts")
                 return False
 
+# Function to initialize the database
+def init_db():
+    return create_tables_with_retry()
+
 # Initialize the database tables
 with app.app_context():
     create_tables_with_retry()

@@ -11,23 +11,8 @@ COPY . .
 
 # Create a script to initialize the database and start the application
 RUN echo '#!/bin/bash \n\
-echo "Checking database connection..." \n\
-python -c "from app import app, db; \n\
-import time; \n\
-for i in range(5): \n\
-    try: \n\
-        with app.app_context(): \n\
-            db.create_all(); \n\
-            print(\"Database connected and tables created.\"); \n\
-            break; \n\
-    except Exception as e: \n\
-        print(f\"Attempt {i+1}/5: {str(e)}\"); \n\
-        if i < 4: \n\
-            print(\"Retrying in 5 seconds...\"); \n\
-            time.sleep(5); \n\
-        else: \n\
-            print(\"Failed to connect to database after 5 attempts.\"); \n\
-" \n\
+echo "Initializing database..." \n\
+python init_db.py \n\
 \n\
 # Start Gunicorn \n\
 echo "Starting application..." \n\

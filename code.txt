@@ -1,0 +1,241 @@
+[
+    {
+        "nome": "Vítor Coelho Baptista da Silva",
+        "empresa": "CALL DO DUDAO",
+        "funcao": "CEO",
+        "segmento": "Apostas esportivas",
+        "email": "vitorbaptista456@gmail.com"
+    },
+    {
+        "nome": "Andreea",
+        "empresa": "live88",
+        "funcao": "Head of Commercial Live88",
+        "segmento": "Casino",
+        "email": "andreea.matei@gmail.com"
+    },
+    {
+        "nome": "Jone Pereira Pacheco",
+        "empresa": "Eles Data Centers",
+        "funcao": "Account manager",
+        "segmento": "Datacenter",
+        "email": "jonepacheco@hotmail.com"
+    },
+    {
+        "nome": "REBERT WILLIAM ALVES MOURA",
+        "empresa": "HCamargo",
+        "funcao": "Marcineiro",
+        "segmento": "Stande",
+        "email": "alvesmoura943@gmail.com"
+    },
+    {
+        "nome": "Henrique Dutra",
+        "empresa": "Oab",
+        "funcao": "Oab",
+        "segmento": "Advogado",
+        "email": "william.albuquerque@gmail.com"
+    },
+    {
+        "nome": "Rejane Baldez",
+        "empresa": "TK Agência de WebMarketing",
+        "funcao": "Ceo",
+        "segmento": "TK Agência de WebMarketing",
+        "email": "tkagencia@hotmail.com"
+    },
+    {
+        "nome": "Michael Rabelo",
+        "empresa": "Serpro",
+        "funcao": "Gerente",
+        "segmento": "Governo",
+        "email": "michael.silva@serpro.gov.br"
+    },
+    {
+        "nome": "Rafael Gonzaga Pettersen",
+        "empresa": "r10 score",
+        "funcao": "social media",
+        "segmento": "app de estatísticas",
+        "email": "rafaelpettersen@grupootg.com"
+    },
+    {
+        "nome": "Mattheus Vargas",
+        "empresa": "r10 score",
+        "funcao": "Supervisor de Branding",
+        "segmento": "app de estatísticas",
+        "email": "mattheusquiroga@grupootg.com"
+    },
+    {
+        "nome": "Laura Ines Manzella",
+        "empresa": "Hub88",
+        "funcao": "Senior Commercial Manager Latam",
+        "segmento": "Agregator",
+        "email": "laura.manzella@yolo.com"
+    },
+    {
+        "nome": "Ricardo solano delgado",
+        "empresa": "Solano Abogados",
+        "funcao": "Director",
+        "segmento": "Solano Abogados",
+        "email": "risolde@gmail.com"
+    },
+	{
+        "nome": "Bennett Alexander",
+        "empresa": "Riverside Packaging",
+        "funcao": "Director Security and Operations",
+        "segmento": "Ecommerce",
+        "email": "riversideorder@gravimail.com"
+    },
+    {
+        "nome": "Fred",
+        "empresa": "verabet",
+        "funcao": "CRM Coordenator",
+        "segmento": "Casa",
+        "email": "fredson.douglas@vera.bet.br"
+    },
+	{
+        "nome": "Brenda do Espirito de Souza",
+        "empresa": "ODDS GATE",
+        "funcao": "Promotora",
+        "segmento": "Jogos",
+        "email": "souzabrenda980@gmail.com"
+    },
+    {
+        "nome": "Mart Milani",
+        "empresa": "Elite Dunk Tips",
+        "funcao": "Influenciador",
+        "segmento": "Tipster",
+        "email": "marthiellomilani@gmail.com"
+    },
+    {
+        "nome": "Pedro Savi",
+        "empresa": "365Scores",
+        "funcao": "Data Analyst & Tips Operator",
+        "segmento": "Affiliate",
+        "email": "pedro.savi@365scores.com"
+    },
+    {
+        "nome": "André Vieira",
+        "empresa": "Sinais de ouro",
+        "funcao": "Sócio",
+        "segmento": "Gestor de trafego é estrategiata",
+        "email": "andrevieiraa7x@gmail.com"
+    },
+    {
+        "nome": "Filipe Camargo",
+        "empresa": "Maria tips",
+        "funcao": "Ceo",
+        "segmento": "Apostas esportivas esportivas",
+        "email": "filipecamargo7@hotmail.com"
+    },
+    {
+        "nome": "Gabriela Finimundi",
+        "empresa": "N365 Group",
+        "funcao": "Key Account Manager",
+        "segmento": "Performance marketing/affiliate marketing",
+        "email": "gabriela.finimundi@n365group.com"
+    },
+	    {
+        "nome": "Andre Luis dos Santos",
+        "empresa": "Afiliados BR",
+        "funcao": "Diretor",
+        "segmento": "Marketing de afiliados",
+        "email": "affiliados.br@gmail.com"
+    },
+    {
+        "nome": "Flavia Ferrera",
+        "empresa": "ITSSECURITY",
+        "funcao": "Diretor",
+        "segmento": "Jogos on-line",
+        "email": "flabrav@me.com"
+    },
+    {
+        "nome": "Lucas de Mello de vicq",
+        "empresa": "365scores",
+        "funcao": "Data analyst & tips",
+        "segmento": "Affiliate",
+        "email": "lucasdevicq@gmail.com"
+    },
+    {
+        "nome": "André Ferreira",
+        "empresa": "IBETPIX",
+        "funcao": "Diretor",
+        "segmento": "Jogos on-line",
+        "email": "flabrav@terra.com.br"
+    },
+    {
+        "nome": "Ruben",
+        "empresa": "Entourage Sport & Entertainment",
+        "funcao": "Head of Commercial",
+        "segmento": "Sports Agency",
+        "email": "rg@entourage-global.com"
+    },
+    {
+        "nome": "Isabella lorenzini",
+        "empresa": "Alea",
+        "funcao": "Senior account manager",
+        "segmento": "Agregador",
+        "email": "isabella.lorenzini@alea.com"
+    },
+    {
+      "nome": "Andre Luis dos Santos",
+      "empresa": "Afiliados BR",
+      "funcao": "Diretor",
+      "segmento": "Marketing de afiliados",
+      "email":"affiliados.br@gmail.com"
+    },
+    {
+        "nome": "FERNANDA TONIN TIENDA",
+        "empresa": "Lhm",
+        "funcao": "Translator",
+        "segmento": "Events",
+        "email": "ftonin.tienda@gmail.com"
+    },
+    {
+        "nome": "Federico Silva y Ferrer",
+        "empresa": "Rivera",
+        "funcao": "Agente",
+        "segmento": "Juego",
+        "email": "eseyefe@yahoo.com"
+    },
+     {
+        "nome": "Brenda do Espirito de Souza",
+        "empresa": "ODDS GATE",
+        "funcao": "Promotora",
+        "segmento": "Jogos",
+        "email": "souzabrenda980@gmail.com"
+    },
+    {
+        "nome": "Ana Lucaroni",
+        "empresa": "Darwin",
+        "funcao": "Head of partnerships",
+        "segmento": "Game provider",
+        "email": "analucaroni@gmail.com"
+    },
+    {
+        "nome": "Carolina Glauzino",
+        "empresa": "Groove Technologies",
+        "funcao": "Business development Manager",
+        "segmento": "Comercial",
+        "email": "carolina@groovetech.com"
+    },
+    {
+        "nome": "Matheus Lamellas Correia Lima",
+        "empresa": "Portal das Bets",
+        "funcao": "Manager",
+        "segmento": "Operador",
+        "email": "matlamellaslima@gmail.com"
+    },
+    {
+        "nome": "Felipe Cordeiro Garcia Furtado",
+        "empresa": "Portal das bets",
+        "funcao": "Manager",
+        "segmento": "Operador",
+        "email": "felipecgf61@gmail.com"
+    },
+    {
+        "nome": "Matheus Aquino de Alencar",
+        "empresa": "Blaze",
+        "funcao": "Gerente de afiliados",
+        "segmento": "Operador",
+        "email": "matheus.alencar@blaze.com"
+    }
+
+]
