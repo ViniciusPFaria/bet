@@ -1,20 +1,33 @@
 from flask import Flask, render_template, request, jsonify
-import csv
-import random
+from flask_sqlalchemy import SQLAlchemy
 import os
+import random
 
 app = Flask(__name__)
-CSV_FILE = "cadastros.csv"
 
-# Criar o arquivo CSV se não existir
-def init_csv():
-    if not os.path.exists(CSV_FILE):
-        with open(CSV_FILE, mode="w", newline="") as file:
-            writer = csv.writer(file)
-            writer.writerow(["Nome", "Empresa", "Função", "Segmento", "Email"])  # Cabeçalhos
+# Configure PostgreSQL connection using Railway provided URL
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', '${{ Postgres.DATABASE_URL }}')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Inicializa o arquivo CSV ao iniciar o servidor
-init_csv()
+# Initialize SQLAlchemy
+db = SQLAlchemy(app)
+
+# Define Participant model
+class Participant(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(100), nullable=False)
+    empresa = db.Column(db.String(100), nullable=False)
+    funcao = db.Column(db.String(100), nullable=False)
+    segmento = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(100), nullable=False, unique=True)
+
+    def __repr__(self):
+        return f'<Participant {self.nome}>'
+
+# Create database tables
+@app.before_first_request
+def create_tables():
+    db.create_all()
 
 # Página de cadastro
 @app.route("/")
@@ -31,9 +44,23 @@ def cadastrar():
     segmento = data["segmento"]
     email = data["email"]
 
-    with open(CSV_FILE, mode="a", newline="") as file:
-        writer = csv.writer(file)
-        writer.writerow([nome, empresa, funcao, segmento, email])
+    # Check if participant with this email already exists
+    existing_participant = Participant.query.filter_by(email=email).first()
+    if existing_participant:
+        return jsonify({"success": False, "message": "Email já cadastrado"})
+
+    # Create new participant
+    new_participant = Participant(
+        nome=nome,
+        empresa=empresa,
+        funcao=funcao,
+        segmento=segmento,
+        email=email
+    )
+    
+    # Add to database
+    db.session.add(new_participant)
+    db.session.commit()
 
     return jsonify({"success": True})
 
@@ -45,10 +72,9 @@ def confirmacao():
 # Rota para sortear um vencedor
 @app.route("/sorteio")
 def sorteio():
-    with open(CSV_FILE, mode="r") as file:
-        reader = csv.reader(file)
-        next(reader)  # Pular cabeçalho
-        participantes = [row[0] for row in reader]  # Pegando apenas os nomes
+    # Get all participants from the database
+    participants = Participant.query.all()
+    participantes = [p.nome for p in participants]
 
     vencedor = random.choice(participantes) if participantes else "Nenhum participante cadastrado"
 
