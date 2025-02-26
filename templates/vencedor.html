@@ -5,9 +5,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vencedor - 1XBET</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .winner-box {
+            background-color: #004080;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+        
+        .winner-index {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #ffcc00;
+            margin-bottom: 10px;
+        }
+        
+        .winner-name {
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .animation-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 350px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .fade-in {
+            animation: fadeIn 1s ease-in;
+        }
+        
+        #loadingAnimation {
+            font-size: 2rem;
+            color: #ffcc00;
+            margin-bottom: 15px;
+        }
+    </style>
 </head>
 <body>
-
     <div class="logo-container">
         <img src="{{ url_for('static', filename='imagens/1xBet_Logo_rgb.png') }}" alt="1XBET Logo" class="logo">
     </div>
@@ -16,12 +70,49 @@
 
     <div class="container">
         <div class="winner-box">
-            <p id="nomeVencedor">{{ vencedor }}</p>
+            <div id="animationContainer" class="animation-container">
+                <div id="loadingAnimation">Sorteando...</div>
+                <div id="loadingDots">...</div>
+            </div>
+            <div id="winnerDisplay" style="display: none;">
+                <div class="winner-index">{{ index }}</div>
+                <div class="winner-name">{{ vencedor }}</div>
+            </div>
         </div>
         <button onclick="sortearNovo()">Sortear Novo</button>
     </div>
 
     <script>
+        // Animation sequence
+        document.addEventListener('DOMContentLoaded', function() {
+            // Numbers animation
+            let counter = 0;
+            const loadingEl = document.getElementById('loadingAnimation');
+            const dotsEl = document.getElementById('loadingDots');
+            
+            // Simulate loading animation
+            const dotsInterval = setInterval(() => {
+                dotsEl.textContent = '.'.repeat(counter % 4);
+                counter++;
+            }, 300);
+            
+            // Show random numbers before revealing winner
+            const numbersInterval = setInterval(() => {
+                loadingEl.textContent = Math.floor(Math.random() * 100);
+            }, 100);
+            
+            // After 3 seconds, reveal the winner
+            setTimeout(() => {
+                clearInterval(dotsInterval);
+                clearInterval(numbersInterval);
+                
+                document.getElementById('animationContainer').style.display = 'none';
+                const winnerDisplay = document.getElementById('winnerDisplay');
+                winnerDisplay.style.display = 'block';
+                winnerDisplay.classList.add('fade-in');
+            }, 3000);
+        });
+
         async function sortearNovo() {
             try {
                 const response = await fetch("/sorteio");
@@ -32,6 +123,5 @@
             }
         }
     </script>
-
 </body>
 </html>

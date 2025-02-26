@@ -124,18 +124,25 @@ def sorteio():
     try:
         # Get all participants from the database
         participants = Participant.query.all()
-        participantes = [p.nome for p in participants]
+        
+        if not participants:
+            return render_template("vencedor.html", vencedor="Nenhum participante cadastrado", index="0")
+        
+        # Choose a random winner and get their index in the list
+        winner_index = random.randint(0, len(participants) - 1)
+        vencedor = participants[winner_index].nome
+        
+        # The index to display is 1-based for better user experience
+        display_index = winner_index + 1
 
-        vencedor = random.choice(participantes) if participantes else "Nenhum participante cadastrado"
-
-        return render_template("vencedor.html", vencedor=vencedor)
+        return render_template("vencedor.html", vencedor=vencedor, index=display_index)
     except Exception as e:
         return f"Error in sorteio: {str(e)}", 500
 
 # Página do vencedor
 @app.route("/vencedor")
 def vencedor():
-    return render_template("vencedor.html", vencedor="Aguardando sorteio")
+    return render_template("vencedor.html", vencedor="Aguardando sorteio", index="?")
 
 # Página para listar todos os participantes
 @app.route("/participantes")
