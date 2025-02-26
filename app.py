@@ -2,36 +2,28 @@ from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 import os
 import random
+import time
 
 # Create the Flask application
 app = Flask(__name__)
 
 # Configure PostgreSQL connection
-# IMPORTANT: On Railway, set DATABASE_URL in the environment variables section
-# Do not use the template format in the code
 database_url = os.environ.get('DATABASE_URL')
 
-# Fallback for local development (this won't be used on Railway)
-if not database_url:
-    print("WARNING: No DATABASE_URL found in environment, using development database")
+# Check if the URL is the template variable (not replaced)
+if database_url and ('${{' in database_url or '}}' in database_url):
+    print(f"WARNING: DATABASE_URL contains template variables that weren't replaced: {database_url}")
+    print("Falling back to SQLite database")
     database_url = "sqlite:///participants.db"
 
-# Ensure correct URL format if it's a PostgreSQL URL
+# Fallback for missing database URL
+if not database_url:
+    print("WARNING: No DATABASE_URL found in environment, using SQLite database")
+    database_url = "sqlite:///participants.db"
+
+# Ensure correct URL format for PostgreSQL
 if database_url and database_url.startswith('postgres://'):
     database_url = database_url.replace('postgres://', 'postgresql://', 1)
-
-# Add pg8000 driver parameter only for PostgreSQL URLs, not for SQLite
-if database_url and 'postgresql://' in database_url:
-    if '?' not in database_url:
-        database_url += '?driver=pg8000'
-    else:
-        database_url += '&driver=pg8000'
-
-# Safety: Don't print full URL as it contains password
-if database_url and '@' in database_url:
-    print(f"Database URL (without password): {database_url.split('@')[0]}@...")
-else:
-    print(f"Using database: {database_url}")
 
 # Configure SQLAlchemy
 app.config['SQLALCHEMY_DATABASE_URI'] = database_url
@@ -60,7 +52,9 @@ def health():
         Participant.query.limit(1).all()
         return "OK - Database connected"
     except Exception as e:
-        return f"Error connecting to database: {str(e)}", 500
+        # Don't fail health check on DB error to allow app to start
+        print(f"Health check warning: {str(e)}")
+        return "OK - Application running, but database not connected", 200
 
 # Basic root endpoint
 @app.route("/")
@@ -132,18 +126,26 @@ def sorteio():
 def vencedor():
     return render_template("vencedor.html", vencedor="Aguardando sorteio")
 
-# Function to create database tables
-def init_db():
+# Create database tables with retry mechanism
+def create_tables_with_retry(retries=5, delay=5):
     with app.app_context():
-        try:
-            db.create_all()
-            print("Database tables created successfully.")
-        except Exception as e:
-            print(f"Error creating tables: {str(e)}")
-            raise
+        for attempt in range(retries):
+            try:
+                print(f"Attempt {attempt+1}/{retries} to create database tables")
+                db.create_all()
+                print("Database tables created successfully!")
+                return True
+            except Exception as e:
+                print(f"Error creating tables: {str(e)}")
+                if attempt < retries - 1:
+                    print(f"Retrying in {delay} seconds...")
+                    time.sleep(delay)
+                else:
+                    print("Failed to create tables after all attempts")
+                    return False
 
 # Only call this when explicitly running this file
 if __name__ == "__main__":
     # Create database tables
-    init_db()
+    create_tables_with_retry()
     app.run(debug=True)

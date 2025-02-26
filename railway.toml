@@ -1,32 +1,30 @@
 # Option 1: Using Nixpacks (less preferred)
+# [build]
+# builder = "nixpacks"
+# 
+# [deploy]
+# startCommand = "python init_db.py && gunicorn --bind 0.0.0.0:$PORT app:app"
+# restartPolicyType = "ON_FAILURE"
+# restartPolicyMaxRetries = 5
+# healthcheckPath = "/health"
+# healthcheckTimeout = 10
+# 
+# # Define the environment variable for the application
+# [variables]
+# DATABASE_URL = "${{ Postgres.DATABASE_URL }}"
+# 
+# [nixpacks]
+# features = ["python"]
+# 
+# [nixpacks.setup]
+# installCommand = "pip install --no-cache-dir -r requirements.txt"
+
+# Option 2: Using Docker (preferred)
 [build]
-builder = "nixpacks"
+dockerfile = "Dockerfile"
 
 [deploy]
-startCommand = "python init_db.py && gunicorn --bind 0.0.0.0:$PORT app:app"
-restartPolicyType = "ON_FAILURE"
-restartPolicyMaxRetries = 5
 healthcheckPath = "/health"
 healthcheckTimeout = 10
 
-# Define the environment variable for the application
-[variables]
-DATABASE_URL = "${{ Postgres.DATABASE_URL }}"
-
-[nixpacks]
-features = ["python"]
-
-[nixpacks.setup]
-installCommand = "pip install --no-cache-dir -r requirements.txt"
-
-# Option 2: Using Docker (preferred)
-# Simply uncomment these lines and comment out the above if you want to use Docker
-# [build]
-# dockerfile = "Dockerfile"
-#
-# [deploy]
-# healthcheckPath = "/health"
-# healthcheckTimeout = 10
-#
-# [variables]
-# DATABASE_URL = "${{ Postgres.DATABASE_URL }}" 
+# Note: Variables are set in the Railway UI for this option 
