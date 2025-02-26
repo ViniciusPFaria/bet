@@ -7,4 +7,7 @@ healthcheckPath = "/"
 healthcheckTimeout = 100
 
 [nixpacks]
-features = ["postgresql"] 
+features = ["python"]
+
+[nixpacks.setup]
+installCommand = "pip install --no-cache-dir -r requirements.txt" 

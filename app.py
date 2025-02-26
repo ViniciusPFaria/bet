@@ -2,11 +2,20 @@ from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 import os
 import random
+import re
 
 app = Flask(__name__)
 
 # Configure PostgreSQL connection using Railway provided URL
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', '${{ Postgres.DATABASE_URL }}')
+# Get database URL from environment or use the Railway template
+database_url = os.getenv('DATABASE_URL', '${{ Postgres.DATABASE_URL }}')
+
+# If the URL starts with postgres:// (Railway format), convert to postgresql://
+if database_url.startswith('postgres://'):
+    database_url = database_url.replace('postgres://', 'postgresql://', 1)
+
+# Configure SQLAlchemy to use pg8000 as the driver
+app.config['SQLALCHEMY_DATABASE_URI'] = database_url + "?driver=pg8000"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize SQLAlchemy
