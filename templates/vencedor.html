@@ -43,6 +43,9 @@
         .container {
             width: 90%;
             max-width: 350px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         
         @keyframes fadeIn {
@@ -59,6 +62,16 @@
             color: #ffcc00;
             margin-bottom: 15px;
         }
+        
+        button {
+            width: 100%;
+            text-align: center;
+            max-width: 200px;
+        }
+        
+        .draw-button {
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -69,22 +82,39 @@
     <h2 class="form-title">GANHADOR</h2>
 
     <div class="container">
-        <div class="winner-box">
-            <div id="animationContainer" class="animation-container">
+        <div class="winner-box" id="winner-box">
+            <!-- Animation container (initially hidden) -->
+            <div id="animationContainer" class="animation-container" style="display: none;">
                 <div id="loadingAnimation">Sorteando...</div>
                 <div id="loadingDots">...</div>
             </div>
+            
+            <!-- Initial message when page loads -->
+            <div id="initialMessage" class="winner-name">
+                Clique no botão abaixo para sortear um ganhador
+            </div>
+            
+            <!-- Winner display (hidden until animation completes) -->
             <div id="winnerDisplay" style="display: none;">
                 <div class="winner-index">{{ index }}</div>
                 <div class="winner-name">{{ vencedor }}</div>
             </div>
         </div>
-        <button onclick="sortearNovo()">Sortear Novo</button>
+        
+        <!-- Button centered -->
+        <button id="sortearButton" class="draw-button" onclick="iniciarSorteio()">Sortear</button>
     </div>
 
     <script>
-        // Animation sequence
-        document.addEventListener('DOMContentLoaded', function() {
+        // Function to run the animation sequence
+        function runAnimationSequence() {
+            // Hide initial message
+            document.getElementById('initialMessage').style.display = 'none';
+            
+            // Show animation container
+            const animationContainer = document.getElementById('animationContainer');
+            animationContainer.style.display = 'flex';
+            
             // Numbers animation
             let counter = 0;
             const loadingEl = document.getElementById('loadingAnimation');
@@ -110,14 +140,41 @@
                 const winnerDisplay = document.getElementById('winnerDisplay');
                 winnerDisplay.style.display = 'block';
                 winnerDisplay.classList.add('fade-in');
+                
+                // Change button text after winner is revealed
+                document.getElementById('sortearButton').textContent = 'Sortear Novo';
             }, 3000);
-        });
+        }
+        
+        // Function to start the drawing process
+        function iniciarSorteio() {
+            const button = document.getElementById('sortearButton');
+            
+            // If winner is already displayed, get a new winner
+            if (document.getElementById('winnerDisplay').style.display === 'block') {
+                sortearNovo();
+                return;
+            }
+            
+            // Otherwise, run the animation to show the current winner
+            runAnimationSequence();
+        }
 
+        // Function to fetch a new winner from the server
         async function sortearNovo() {
             try {
                 const response = await fetch("/sorteio");
                 const html = await response.text();
                 document.body.innerHTML = html;
+                
+                // Run animation for the new page
+                // We need to wait for DOM to load
+                setTimeout(() => {
+                    if (document.getElementById('initialMessage')) {
+                        document.getElementById('initialMessage').style.display = 'none';
+                        runAnimationSequence();
+                    }
+                }, 100);
             } catch (error) {
                 console.error("Erro ao sortear novo vencedor:", error);
             }
