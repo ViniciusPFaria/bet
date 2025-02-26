@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.exceptions import BadRequest
 from flask_cors import CORS
@@ -250,32 +250,78 @@ def participantes():
                               participants=[],
                               error=f"Error retrieving participants: {str(e)}")
 
+# Admin page for database management
+@app.route("/admin")
+def admin():
+    try:
+        # Get current stats
+        total_count = Participant.query.count()
+        stats = {
+            "total": total_count,
+            "added": 0,
+            "duplicates": 0,
+            "errors": 0
+        }
+        return render_template("admin.html", stats=stats)
+    except Exception as e:
+        logger.error(f"Error in admin page: {str(e)}")
+        return render_template("admin.html", 
+                              status="Erro ao carregar estatísticas", 
+                              success=False,
+                              details=str(e))
+
 # Special route to seed database from code.txt
-@app.route("/api/seed", methods=["GET"])
+@app.route("/api/seed", methods=["GET", "POST"])
 def seed_database_route():
     try:
         # Import the seed function dynamically to avoid circular imports
         from seed_db import seed_database
         
+        # Track stats
+        before_count = Participant.query.count()
+        
         with app.app_context():
             success = seed_database()
+        
+        # Get updated count
+        after_count = Participant.query.count()
+        added = after_count - before_count
             
         if success:
-            return jsonify({
+            response_data = {
                 "success": True,
                 "message": "Database has been seeded successfully",
-                "participant_count": Participant.query.count()
-            })
+                "added": added,
+                "total": after_count
+            }
+            
+            # Return JSON for API calls, redirect for GET requests
+            if request.method == "POST":
+                return jsonify(response_data)
+            else:
+                # For GET requests, redirect to admin page with success message
+                return redirect(url_for('admin', status="Database seeded successfully", 
+                                       success=True, added=added, total=after_count))
         else:
+            error_msg = "Failed to seed database. Check server logs for details."
+            if request.method == "POST":
+                return jsonify({
+                    "success": False,
+                    "message": error_msg
+                }), 500
+            else:
+                return redirect(url_for('admin', status=error_msg, success=False))
+    except Exception as e:
+        logger.error(f"Error in seed database route: {str(e)}")
+        error_msg = f"Error: {str(e)}"
+        
+        if request.method == "POST":
             return jsonify({
                 "success": False,
-                "message": "Failed to seed database. Check server logs for details."
+                "error": error_msg
             }), 500
-    except Exception as e:
-        return jsonify({
-            "success": False,
-            "error": str(e)
-        }), 500
+        else:
+            return redirect(url_for('admin', status=error_msg, success=False))
 
 # Create database tables with retry mechanism
 def create_tables_with_retry(retries=5, delay=5):
