@@ -41,6 +41,7 @@ db = SQLAlchemy(app)
 
 # Define Participant model
 class Participant(db.Model):
+    __tablename__ = 'participant'
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(100), nullable=False)
     empresa = db.Column(db.String(100), nullable=False)
@@ -153,21 +154,24 @@ def vencedor():
 
 # Create database tables with retry mechanism
 def create_tables_with_retry(retries=5, delay=5):
-    with app.app_context():
-        for attempt in range(retries):
-            try:
-                print(f"Attempt {attempt+1}/{retries} to create database tables")
-                db.create_all()
-                print("Database tables created successfully!")
-                return True
-            except Exception as e:
-                print(f"Error creating tables: {type(e).__name__}: {str(e)}")
-                if attempt < retries - 1:
-                    print(f"Retrying in {delay} seconds...")
-                    time.sleep(delay)
-                else:
-                    print("Failed to create tables after all attempts")
-                    return False
+    for attempt in range(retries):
+        try:
+            print(f"Attempt {attempt+1}/{retries} to create database tables")
+            db.create_all()
+            print("Database tables created successfully!")
+            return True
+        except Exception as e:
+            print(f"Error creating tables: {type(e).__name__}: {str(e)}")
+            if attempt < retries - 1:
+                print(f"Retrying in {delay} seconds...")
+                time.sleep(delay)
+            else:
+                print("Failed to create tables after all attempts")
+                return False
+
+# Initialize the database tables
+with app.app_context():
+    create_tables_with_retry()
 
 # Before app startup, check if we can connect to the database
 def check_database_connection():
