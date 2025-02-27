@@ -32,6 +32,18 @@
             color: white;
         }
         
+        .winner-details {
+            font-size: 1.2rem;
+            color: #ffcc00;
+            margin-top: 5px;
+        }
+        
+        .winner-email {
+            font-size: 1rem;
+            color: #a3c9ff;
+            margin-top: 5px;
+        }
+        
         .animation-container {
             display: flex;
             flex-direction: column;
@@ -135,6 +147,12 @@
             <div id="winnerDisplay" style="display: none;">
                 <div class="winner-index">{{ index }}</div>
                 <div class="winner-name">{{ vencedor }}</div>
+                {% if empresa %}
+                <div class="winner-details">{{ empresa }}</div>
+                {% endif %}
+                {% if email %}
+                <div class="winner-email">{{ email }}</div>
+                {% endif %}
             </div>
         </div>
         

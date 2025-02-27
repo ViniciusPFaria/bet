@@ -178,9 +178,12 @@ def sorteio():
         # Get all participants from the database
         participants = Participant.query.all()
         
+        # Log the number of participants found
+        logger.info(f"Sorteio: Found {len(participants)} participants in database")
+        
         # If no participants found, try to seed the database
         if not participants:
-            print("No participants found in database, attempting to seed from code.txt...")
+            logger.warning("No participants found in database, attempting to seed from code.txt...")
             try:
                 from seed_db import seed_database
                 with app.app_context():
@@ -188,29 +191,40 @@ def sorteio():
                     if seed_success:
                         # Query again after seeding
                         participants = Participant.query.all()
-                        print(f"Database seeded successfully, now has {len(participants)} participants")
+                        logger.info(f"Database seeded successfully, now has {len(participants)} participants")
                     else:
-                        print("Database seeding failed")
+                        logger.error("Database seeding failed")
             except Exception as seed_error:
-                print(f"Error while trying to seed database: {str(seed_error)}")
+                logger.error(f"Error while trying to seed database: {str(seed_error)}")
         
         # After potential seeding, check participants again
         if not participants:
+            logger.error("No participants found in database after seeding attempt")
             return render_template("vencedor.html", 
                                   vencedor="Nenhum participante cadastrado. Por favor, verifique o banco de dados.", 
                                   index="0",
                                   error="Database is empty. Please ensure code.txt is properly formatted and accessible.")
         
+        # Log all participants for debugging
+        for i, p in enumerate(participants):
+            logger.info(f"Participant {i+1}: {p.nome} ({p.email})")
+        
         # Choose a random winner and get their index in the list
         winner_index = random.randint(0, len(participants) - 1)
-        vencedor = participants[winner_index].nome
+        vencedor = participants[winner_index]
+        
+        logger.info(f"Selected winner: {vencedor.nome} at index {winner_index}")
         
         # The index to display is 1-based for better user experience
         display_index = winner_index + 1
 
-        return render_template("vencedor.html", vencedor=vencedor, index=display_index)
+        return render_template("vencedor.html", 
+                              vencedor=vencedor.nome, 
+                              index=display_index,
+                              empresa=vencedor.empresa,
+                              email=vencedor.email)
     except Exception as e:
-        print(f"Error in sorteio route: {str(e)}")
+        logger.error(f"Error in sorteio route: {str(e)}")
         return render_template("vencedor.html", 
                               vencedor="Erro ao processar o sorteio", 
                               index="?",
