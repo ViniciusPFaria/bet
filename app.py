@@ -337,6 +337,34 @@ def seed_database_route():
         else:
             return redirect(url_for('admin', status=error_msg, success=False))
 
+# API endpoint to clear the participants database
+@app.route("/api/clear", methods=["POST"])
+def clear_database_route():
+    try:
+        # Get the count before deletion for reporting
+        count = Participant.query.count()
+        logger.info(f"API request to clear database. Found {count} participants to delete")
+        
+        # Delete all participants
+        Participant.query.delete()
+        db.session.commit()
+        
+        # Verify deletion
+        new_count = Participant.query.count()
+        logger.info(f"Database cleared via API. {count} participants deleted. Remaining: {new_count}")
+        
+        return jsonify({
+            "success": True, 
+            "message": f"Database cleared. {count} participants deleted."
+        })
+    except Exception as e:
+        logger.error(f"Error clearing database: {str(e)}")
+        db.session.rollback()
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
 # Create database tables with retry mechanism
 def create_tables_with_retry(retries=5, delay=5):
     for attempt in range(retries):
