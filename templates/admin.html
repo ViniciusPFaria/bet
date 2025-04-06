@@ -12,37 +12,24 @@
         }
         .admin-container {
             max-width: 800px;
-            margin: 0 auto;
-            background-color: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            margin: 50px auto;
         }
-        .btn-seed {
-            background-color: #6f42c1;
-            color: white;
-            padding: 10px 20px;
-            font-size: 18px;
-            margin-top: 20px;
-        }
-        .btn-seed:hover {
-            background-color: #5a32a3;
-            color: white;
+        .card {
+            margin-bottom: 30px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         .status-box {
-            margin-top: 30px;
+            margin-top: 20px;
             padding: 15px;
             border-radius: 5px;
         }
         .status-success {
             background-color: #d4edda;
             color: #155724;
-            border: 1px solid #c3e6cb;
         }
         .status-error {
             background-color: #f8d7da;
             color: #721c24;
-            border: 1px solid #f5c6cb;
         }
         .status-info {
             background-color: #e2f0fd;
@@ -54,58 +41,59 @@
             margin-bottom: 30px;
         }
         .stats {
-            margin-top: 30px;
-            padding: 20px;
-            background-color: #f8f9fa;
-            border-radius: 5px;
+            margin-top: 20px;
         }
         .back-link {
-            margin-top: 20px;
             display: inline-block;
+            margin-top: 20px;
+            color: #0d6efd;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
-    <div class="container admin-container">
-        <h1 class="text-center">Painel de Administração</h1>
-        
+    <div class="container mt-5">
         <div class="row">
             <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0">Gerenciamento de Banco de Dados</h5>
-                    </div>
-                    <div class="card-body">
-                        <p>Use o botão abaixo para popular o banco de dados com os participantes do arquivo code.txt.</p>
-                        
-                        <div class="d-grid gap-2">
-                            <button id="seedButton" class="btn btn-seed">Importar Participantes</button>
+                <h1 class="text-center">Painel de Administração</h1>
+                
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">Gerenciamento de Banco de Dados</h5>
+                            </div>
+                            <div class="card-body">
+                                
+                                {% if status %}
+                                <div class="status-box {% if success %}status-success{% else %}status-error{% endif %}">
+                                    <h5>{{ status }}</h5>
+                                    {% if details %}
+                                    <p>{{ details }}</p>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                                
+                                {% if stats %}
+                                <div class="stats">
+                                    <h5>Estatísticas:</h5>
+                                    <ul>
+                                        <li>Total de participantes: {{ stats.total }}</li>
+                                        <li>Adicionados: {{ stats.added }}</li>
+                                        <li>Duplicados: {{ stats.duplicates }}</li>
+                                        <li>Erros: {{ stats.errors }}</li>
+                                    </ul>
+                                </div>
+                                {% endif %}
+                            </div>
                         </div>
                         
-                        {% if status %}
-                        <div class="status-box {% if success %}status-success{% else %}status-error{% endif %}">
-                            <h5>{{ status }}</h5>
-                            {% if details %}
-                            <p>{{ details }}</p>
-                            {% endif %}
-                        </div>
-                        {% endif %}
-                        
-                        {% if stats %}
-                        <div class="stats">
-                            <h5>Estatísticas:</h5>
-                            <ul>
-                                <li>Total de participantes: {{ stats.total }}</li>
-                                <li>Adicionados: {{ stats.added }}</li>
-                                <li>Duplicados: {{ stats.duplicates }}</li>
-                                <li>Erros: {{ stats.errors }}</li>
-                            </ul>
-                        </div>
-                        {% endif %}
+                        <a href="/" class="back-link">← Voltar para página inicial</a>
                     </div>
                 </div>
-                
-                <a href="/" class="back-link">← Voltar para página inicial</a>
             </div>
         </div>
     </div>
@@ -129,34 +117,10 @@
                 statusBox.innerHTML += `<p>Adicionados: ${added} participantes. Total: ${total} participantes.</p>`;
             }
             
-            // Insert after the button
-            const buttonContainer = document.querySelector('.d-grid');
-            buttonContainer.parentNode.insertBefore(statusBox, buttonContainer.nextSibling);
+            // Insert at the beginning of card-body
+            const cardBody = document.querySelector('.card-body');
+            cardBody.insertBefore(statusBox, cardBody.firstChild);
         }
-        
-        document.getElementById('seedButton').addEventListener('click', function() {
-            // Disable button to prevent multiple clicks
-            this.disabled = true;
-            this.innerHTML = 'Importando... <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
-            
-            // Send request to seed database
-            fetch('/api/seed', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Reload page to show results
-                window.location.reload();
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                this.innerHTML = 'Erro ao importar. Tente novamente.';
-                this.disabled = false;
-            });
-        });
     </script>
 </body>
 </html> 

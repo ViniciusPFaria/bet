@@ -181,29 +181,13 @@ def sorteio():
         # Log the number of participants found
         logger.info(f"Sorteio: Found {len(participants)} participants in database")
         
-        # If no participants found, try to seed the database
+        # Check participants
         if not participants:
-            logger.warning("No participants found in database, attempting to seed from code.txt...")
-            try:
-                from seed_db import seed_database
-                with app.app_context():
-                    seed_success = seed_database()
-                    if seed_success:
-                        # Query again after seeding
-                        participants = Participant.query.all()
-                        logger.info(f"Database seeded successfully, now has {len(participants)} participants")
-                    else:
-                        logger.error("Database seeding failed")
-            except Exception as seed_error:
-                logger.error(f"Error while trying to seed database: {str(seed_error)}")
-        
-        # After potential seeding, check participants again
-        if not participants:
-            logger.error("No participants found in database after seeding attempt")
+            logger.error("No participants found in database")
             return render_template("vencedor.html", 
                                   vencedor="Nenhum participante cadastrado. Por favor, verifique o banco de dados.", 
                                   index="0",
-                                  error="Database is empty. Please ensure code.txt is properly formatted and accessible.")
+                                  error="Database is empty.")
         
         # Log all participants for debugging
         for i, p in enumerate(participants):
@@ -240,23 +224,6 @@ def vencedor():
 def participantes():
     try:
         participants = Participant.query.all()
-        
-        # If no participants found, try to seed the database
-        if not participants:
-            print("No participants found in database, attempting to seed from code.txt...")
-            try:
-                from seed_db import seed_database
-                with app.app_context():
-                    seed_success = seed_database()
-                    if seed_success:
-                        # Query again after seeding
-                        participants = Participant.query.all()
-                        print(f"Database seeded successfully, now has {len(participants)} participants")
-                    else:
-                        print("Database seeding failed")
-            except Exception as seed_error:
-                print(f"Error while trying to seed database: {str(seed_error)}")
-        
         return render_template("participantes.html", participants=participants)
     except Exception as e:
         print(f"Error retrieving participants: {str(e)}")
@@ -283,59 +250,6 @@ def admin():
                               status="Erro ao carregar estatísticas", 
                               success=False,
                               details=str(e))
-
-# Special route to seed database from code.txt
-@app.route("/api/seed", methods=["GET", "POST"])
-def seed_database_route():
-    try:
-        # Import the seed function dynamically to avoid circular imports
-        from seed_db import seed_database
-        
-        # Track stats
-        before_count = Participant.query.count()
-        
-        with app.app_context():
-            success = seed_database()
-        
-        # Get updated count
-        after_count = Participant.query.count()
-        added = after_count - before_count
-            
-        if success:
-            response_data = {
-                "success": True,
-                "message": "Database has been seeded successfully",
-                "added": added,
-                "total": after_count
-            }
-            
-            # Return JSON for API calls, redirect for GET requests
-            if request.method == "POST":
-                return jsonify(response_data)
-            else:
-                # For GET requests, redirect to admin page with success message
-                return redirect(url_for('admin', status="Database seeded successfully", 
-                                       success=True, added=added, total=after_count))
-        else:
-            error_msg = "Failed to seed database. Check server logs for details."
-            if request.method == "POST":
-                return jsonify({
-                    "success": False,
-                    "message": error_msg
-                }), 500
-            else:
-                return redirect(url_for('admin', status=error_msg, success=False))
-    except Exception as e:
-        logger.error(f"Error in seed database route: {str(e)}")
-        error_msg = f"Error: {str(e)}"
-        
-        if request.method == "POST":
-            return jsonify({
-                "success": False,
-                "error": error_msg
-            }), 500
-        else:
-            return redirect(url_for('admin', status=error_msg, success=False))
 
 # API endpoint to clear the participants database
 @app.route("/api/clear", methods=["POST"])

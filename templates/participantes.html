@@ -132,7 +132,6 @@
         <p><strong>Erro / Error:</strong> {{ error }}</p>
         <p>Tente carregar a página novamente ou contate o administrador.</p>
         <p>Try refreshing the page or contact the administrator.</p>
-        <a href="/api/seed" class="action-button">Tentar Carregar Dados / Try Loading Data</a>
     </div>
     {% endif %}
 
@@ -145,10 +144,9 @@
     {% if participants|length == 0 and not error %}
     <div class="empty-message">
         <p><strong>Nenhum participante cadastrado.</strong></p>
-        <p>Não há participantes cadastrados no sistema. Você pode adicionar participantes manualmente ou carregar os dados iniciais.</p>
+        <p>Não há participantes cadastrados no sistema. Você pode adicionar participantes manualmente.</p>
         <p><strong>No participants registered.</strong></p>
-        <p>There are no participants registered in the system. You can add participants manually or load initial data.</p>
-        <a href="/api/seed" class="action-button">Carregar Dados Iniciais / Load Initial Data</a>
+        <p>There are no participants registered in the system. You can add participants manually.</p>
     </div>
     {% endif %}
 
