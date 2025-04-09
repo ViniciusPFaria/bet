@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, redirect, url_for
+from flask import Flask, render_template, request, jsonify, redirect, url_for, Response
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.exceptions import BadRequest
 from flask_cors import CORS
@@ -8,6 +8,8 @@ import time
 import logging
 from sqlalchemy import create_engine
 from sqlalchemy.exc import SQLAlchemyError, OperationalError
+import csv
+from io import StringIO
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -278,6 +280,34 @@ def clear_database_route():
             "success": False,
             "error": str(e)
         }), 500
+
+# Route to download participants as CSV
+@app.route("/download-participants")
+def download_participants():
+    try:
+        # Get all participants from the database
+        participants = Participant.query.all()
+        
+        # Create CSV in memory using StringIO and csv module
+        output = StringIO()
+        writer = csv.writer(output)
+        
+        # Write header
+        writer.writerow(['ID', 'Nome', 'Empresa', 'Função', 'Segmento', 'Email'])
+        
+        # Write data rows
+        for p in participants:
+            writer.writerow([p.id, p.nome, p.empresa, p.funcao, p.segmento, p.email])
+        
+        # Return CSV as a downloadable file
+        return Response(
+            output.getvalue(),
+            mimetype="text/csv",
+            headers={"Content-disposition": "attachment; filename=participants.csv"}
+        )
+    except Exception as e:
+        logger.error(f"Error generating CSV: {str(e)}")
+        return jsonify({"error": str(e)}), 500
 
 # Create database tables with retry mechanism
 def create_tables_with_retry(retries=5, delay=5):

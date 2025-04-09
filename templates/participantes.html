@@ -177,6 +177,9 @@
 
     <div class="button-container">
         <a href="/" class="back-button">Voltar / Back</a>
+        {% if participants|length > 0 %}
+        <a href="/download-participants" class="action-button">Baixar CSV / Download CSV</a>
+        {% endif %}
     </div>
 </body>
 </html> 
