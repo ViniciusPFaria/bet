@@ -14,21 +14,21 @@
 
     <div class="text-container">
         <h2 class="form-title">
-            PREENCHA SEUS DADOS ABAIXO E<br>
-            TENHA A CHANCE DE GANHAR<br>
-            PRÊMIOS EXCLUSIVOS TODOS OS<br>
-            DIAS NA SIGMA, NO ESPAÇO DA 1XBET.
+            FILL IN YOUR DETAILS BELOW<br>
+            FOR A CHANCE TO WIN<br>
+            EXCLUSIVE PRIZES EVERY<br>
+            DAY AT SAGSE, IN THE 1XBET SPACE!
         </h2>
 
         <h3 class="form-subtitle">
-            <span class="english-text">Fill in your details below for a chance to win exclusive</span><br> 
-            <span class="english-text">prizes every day at SIGMA, in the 1XBET space!</span>
+            <span class="english-text">Rellena tus datos abajo y participa para tener la oportunidad de ganar </span><br> 
+            <span class="english-text">premios exclusivos todos los días en SAGSE, en el espacio de 1XBET!</span>
         </h3>
     </div>
 
     <form class="form-container" id="form">
         <div class="input-container">
-            <input type="text" id="nome" name="nome" placeholder="Nome Completo/Full Name:" required>
+            <input type="text" id="nome" name="nome" placeholder="Nombre Completo / Full Name:" required>
         </div>
         
         <div class="input-container">
@@ -36,11 +36,11 @@
         </div>
         
         <div class="input-container">
-            <input type="text" id="funcao" name="funcao" placeholder="Função/Job title:" required>
+            <input type="text" id="funcao" name="funcao" placeholder="Cargo/Job title:" required>
         </div>
         
         <div class="input-container">
-            <input type="text" id="segmento" name="segmento" placeholder="Segmento do Negócio/Type of Business:" required>
+            <input type="text" id="segmento" name="segmento" placeholder="Sector de Negocio/Type of Business:" required>
         </div>
 
         <div class="input-container">
@@ -51,7 +51,8 @@
         <div class="checkbox-container">
             <input type="checkbox" id="lgpd" name="lgpd" required>
             <label for="lgpd" class="checkbox-label">
-                Eu aceito os termos da LGPD / I agree with LGPD
+                 I accept that 1XBET uses my data.
+      Acepto que 1XBET use mis datos.
             </label>
         </div>
 
@@ -84,7 +85,7 @@
                     });
 
                     if (!response.ok) {
-                        throw new Error("Erro no cadastro: " + response.statusText);
+                        throw new Error("Error no cadastro: " + response.statusText);
                     }
 
                     const resultado = await response.json();
