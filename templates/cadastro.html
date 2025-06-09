@@ -1,106 +1,117 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro - 1XBET</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cadastro - 1XBET</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
-    <div class="logo-container">
-        <img src="{{ url_for('static', filename='imagens/1xBet_Logo_rgb.png') }}" alt="1XBET Logo" class="logo">
-    </div>
+<div class="logo-container">
+<img src="{{ url_for('static', filename='imagens/1xBet_Logo_rgb.png') }}" alt="1XBET Logo" class="logo">
+</div>
 
-    <div class="text-container">
-        <h2 class="form-title">
-            RELLENA TUS DATOS ABAJO Y PARTICIPA<br> 
-            PARA TENER LA OPORTUNIDAD DE GANAR<br>
-            PREMIOS EXCLUSIVOS TODOS LOS DÍAS EN SAGSE<br>
-            EN EL ESPACIO DE 1XBET!
-        </h2>
+<div class="text-container">
+<h2 class="form-title">
+            PREENCHA SEUS DADOS ABAIXO E<br>
+            TENHA A CHANCE DE GANHAR<br>
+            PRÊMIOS EXCLUSIVOS TODOS OS<br>
+            DIAS NA SIGMA, NO ESPAÇO DA 1XBET.
+            FILL IN YOUR DETAILS BELOW<br>
+            FOR A CHANCE TO WIN<br>
+            EXCLUSIVE PRIZES EVERY<br>
+            DAY AT SAGSE, IN THE 1XBET SPACE!
+</h2>
 
-        <h3 class="form-subtitle">
-            <span class="english-text">FILL IN YOUR DETAILS BELOW FOR A CHANCE TO WIN </span><br> 
-            <span class="english-text">EXCLUSIVE PRIZES EVERY DAY AT SAGSE, IN THE 1XBET SPACE!</span>
-        </h3>
-    </div>
+<h3 class="form-subtitle">
+            <span class="english-text">Fill in your details below for a chance to win exclusive</span><br> 
+            <span class="english-text">prizes every day at SIGMA, in the 1XBET space!</span>
+            <span class="english-text">Rellena tus datos abajo y participa para tener la oportunidad de ganar </span><br> 
+            <span class="english-text">premios exclusivos todos los días en SAGSE, en el espacio de 1XBET!</span>
+</h3>
+</div>
 
-    <form class="form-container" id="form">
-        <div class="input-container">
+<form class="form-container" id="form">
+<div class="input-container">
+            <input type="text" id="nome" name="nome" placeholder="Nome Completo/Full Name:" required>
             <input type="text" id="nome" name="nome" placeholder="Nombre Completo / Full Name:" required>
-        </div>
-        
-        <div class="input-container">
-            <input type="text" id="empresa" name="empresa" placeholder="Empresa/Company:" required>
-        </div>
-        
-        <div class="input-container">
+</div>
+
+<div class="input-container">
+<input type="text" id="empresa" name="empresa" placeholder="Empresa/Company:" required>
+</div>
+
+<div class="input-container">
+            <input type="text" id="funcao" name="funcao" placeholder="Função/Job title:" required>
             <input type="text" id="funcao" name="funcao" placeholder="Cargo/Job title:" required>
-        </div>
-        
-        <div class="input-container">
+</div>
+
+<div class="input-container">
+            <input type="text" id="segmento" name="segmento" placeholder="Segmento do Negócio/Type of Business:" required>
             <input type="text" id="segmento" name="segmento" placeholder="Sector de Negocio/Type of Business:" required>
-        </div>
+</div>
 
-        <div class="input-container">
-            <input type="email" id="email" name="email" placeholder="E-mail:" required>
-        </div>
+<div class="input-container">
+<input type="email" id="email" name="email" placeholder="E-mail:" required>
+</div>
 
-        <!-- Checkbox -->
-        <div class="checkbox-container">
-            <input type="checkbox" id="lgpd" name="lgpd" required>
-            <label for="lgpd" class="checkbox-label">
-                 I accept that 1XBET uses my data.<br>
+<!-- Checkbox -->
+<div class="checkbox-container">
+<input type="checkbox" id="lgpd" name="lgpd" required>
+<label for="lgpd" class="checkbox-label">
+                Eu aceito os termos da LGPD / I agree with LGPD
+                 I accept that 1XBET uses my data.
       Acepto que 1XBET use mis datos.
-            </label>
-        </div>
+</label>
+</div>
 
-        <div>
-            <button type="submit" id="submit-button">Enviar/Submit</button>
-        </div>  
-    </form>
+<div>
+<button type="submit" id="submit-button">Enviar/Submit</button>
+</div>  
+</form>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            console.log("JavaScript do Cadastro carregado!");
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+console.log("JavaScript do Cadastro carregado!");
 
-            const form = document.getElementById("form");
+const form = document.getElementById("form");
 
-            form.addEventListener("submit", async function (event) {
-                event.preventDefault();
-                console.log("Botão de cadastro clicado!");
+form.addEventListener("submit", async function (event) {
+event.preventDefault();
+console.log("Botão de cadastro clicado!");
 
-                const nome = document.getElementById("nome").value;
-                const empresa = document.getElementById("empresa").value;
-                const funcao = document.getElementById("funcao").value;
-                const segmento = document.getElementById("segmento").value;
-                const email = document.getElementById("email").value;
+const nome = document.getElementById("nome").value;
+const empresa = document.getElementById("empresa").value;
+const funcao = document.getElementById("funcao").value;
+const segmento = document.getElementById("segmento").value;
+const email = document.getElementById("email").value;
 
-                try {
-                    const response = await fetch("/api/cadastro", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ nome, empresa, funcao, segmento, email }) 
-                    });
+try {
+const response = await fetch("/api/cadastro", {
+method: "POST",
+headers: { "Content-Type": "application/json" },
+body: JSON.stringify({ nome, empresa, funcao, segmento, email }) 
+});
 
-                    if (!response.ok) {
+if (!response.ok) {
+                        throw new Error("Erro no cadastro: " + response.statusText);
                         throw new Error("Error no cadastro: " + response.statusText);
-                    }
+}
 
-                    const resultado = await response.json();
-                    console.log(resultado);
+const resultado = await response.json();
+console.log(resultado);
 
-                    if (resultado.success) {
-                        console.log("Redirecionando para confirmacao.html...");
-                        window.location.href = "/confirmacao";
-                    }
-                } catch (error) {
-                    console.error("Erro ao enviar dados:", error);
-                    alert("Erro ao conectar ao servidor.");
-                }
-            });
-        });
-    </script>
+if (resultado.success) {
+console.log("Redirecionando para confirmacao.html...");
+window.location.href = "/confirmacao";
+}
+} catch (error) {
+console.error("Erro ao enviar dados:", error);
+alert("Erro ao conectar ao servidor.");
+}
+});
+});
+</script>
 </body>
 </html>
