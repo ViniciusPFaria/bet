@@ -51,8 +51,8 @@
         <div class="checkbox-container">
             <input type="checkbox" id="lgpd" name="lgpd" required>
             <label for="lgpd" class="checkbox-label">
-                 I accept that 1XBET uses my data.<br>
-      Acepto que 1XBET use mis datos.
+                I accept that 1XBET uses my data.<br>
+                Acepto que 1XBET use mis datos.
             </label>
         </div>
 
@@ -63,41 +63,49 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            console.log("JavaScript do Cadastro carregado!");
+            console.log("Cadastro JavaScript loaded!");
 
             const form = document.getElementById("form");
 
+            // Add submit event listener to the form
             form.addEventListener("submit", async function (event) {
-                event.preventDefault();
-                console.log("Botão de cadastro clicado!");
+                event.preventDefault(); // Prevent default form submission
+                console.log("Submit button clicked!");
 
+                // Get form field values
                 const nome = document.getElementById("nome").value;
                 const empresa = document.getElementById("empresa").value;
                 const funcao = document.getElementById("funcao").value;
                 const segmento = document.getElementById("segmento").value;
                 const email = document.getElementById("email").value;
+                const lgpd = document.getElementById("lgpd").checked;
 
                 try {
+                    // Send POST request to backend
                     const response = await fetch("/api/cadastro", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ nome, empresa, funcao, segmento, email }) 
+                        body: JSON.stringify({ nome, empresa, funcao, segmento, email, lgpd })
                     });
 
                     if (!response.ok) {
-                        throw new Error("Error no cadastro: " + response.statusText);
+                        throw new Error("Error during registration: " + response.statusText);
                     }
 
                     const resultado = await response.json();
                     console.log(resultado);
 
+                    // Redirect if registration was successful
                     if (resultado.success) {
-                        console.log("Redirecionando para confirmacao.html...");
+                        console.log("Redirecting to confirmation page...");
                         window.location.href = "/confirmacao";
+                    } else {
+                        alert("Registration failed.");
                     }
+
                 } catch (error) {
-                    console.error("Erro ao enviar dados:", error);
-                    alert("Erro ao conectar ao servidor.");
+                    console.error("Error sending data:", error);
+                    alert("Error connecting to the server.");
                 }
             });
         });
