@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Reset Database</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container py-5">
+        <h1 class="mb-4">Dashboard</h1>
+
+        {% if error %}
+        <div class="alert alert-danger" role="alert">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Total de participantes</h5>
+                <p class="card-text display-6" id="total-count">{{ total }}</p>
+            </div>
+        </div>
+
+        <!-- Delete range -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Remover participantes por faixa de IDs</h5>
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                    <input type="number" min="1" class="form-control" id="start-id" placeholder="Início" style="max-width:120px;">
+                    <span class="mx-1">-</span>
+                    <input type="number" min="1" class="form-control" id="end-id" placeholder="Fim" style="max-width:120px;">
+                    <button id="delete-range-btn" class="btn btn-warning">Excluir Faixa</button>
+                </div>
+            </div>
+        </div>
+
+        <button id="reset-btn" class="btn btn-danger">
+            Resetar Banco de Dados
+        </button>
+
+        <a href="/" class="btn btn-link ms-3">Voltar</a>
+    </div>
+
+    <script>
+        const resetBtn = document.getElementById('reset-btn');
+        const totalEl = document.getElementById('total-count');
+
+        resetBtn.addEventListener('click', () => {
+            if (!confirm('Tem certeza que deseja remover todos os participantes?')) return;
+
+            fetch('/api/clear', { method: 'POST' })
+                .then(resp => resp.json())
+                .then(data => {
+                    alert(data.message || data.error || 'Operação concluída');
+                    if (data.success) {
+                        totalEl.textContent = '0';
+                    }
+                })
+                .catch(err => {
+                    alert('Erro ao resetar banco: ' + err);
+                });
+        });
+
+        // Delete range logic
+        const deleteRangeBtn = document.getElementById('delete-range-btn');
+        const startInput = document.getElementById('start-id');
+        const endInput = document.getElementById('end-id');
+
+        deleteRangeBtn.addEventListener('click', () => {
+            const start = startInput.value;
+            const end = endInput.value;
+
+            if (!start || !end) {
+                alert('Preencha ambos os valores de início e fim.');
+                return;
+            }
+
+            if (parseInt(start, 10) > parseInt(end, 10)) {
+                alert('O valor inicial deve ser menor ou igual ao valor final.');
+                return;
+            }
+
+            fetch('/api/delete-range', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ start_id: start, end_id: end })
+            })
+                .then(resp => resp.json())
+                .then(data => {
+                    alert(data.message || data.error || 'Operação concluída');
+                    if (data.success) {
+                        totalEl.textContent = data.remaining;
+                    }
+                })
+                .catch(err => alert('Erro ao excluir faixa: ' + err));
+        });
+    </script>
+</body>
+</html> 

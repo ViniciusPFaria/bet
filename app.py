@@ -344,6 +344,61 @@ with app.app_context():
         logger.warning(f"Could not initialize database during startup: {str(e)}")
         logger.info("Application will continue starting and retry database operations during requests")
 
+# Dashboard page with database reset option
+@app.route("/dashboard")
+def dashboard():
+    try:
+        total_count = Participant.query.count()
+        return render_template("dashboard.html", total=total_count)
+    except Exception as e:
+        logger.error(f"Error in dashboard page: {str(e)}")
+        return render_template("dashboard.html", error=str(e))
+
+# API endpoint to delete participants in a given ID range (inclusive)
+@app.route("/api/delete-range", methods=["POST"])
+def delete_range():
+    try:
+        # Support both JSON and form submissions
+        data = request.json if request.is_json else request.form
+        start_id = data.get("start_id")
+        end_id = data.get("end_id")
+
+        # Basic validation
+        if start_id is None or end_id is None:
+            return jsonify({"success": False, "message": "start_id and end_id are required"}), 400
+
+        try:
+            start_id = int(start_id)
+            end_id = int(end_id)
+        except ValueError:
+            return jsonify({"success": False, "message": "IDs must be integers"}), 400
+
+        if start_id < 1 or end_id < 1 or start_id > end_id:
+            return jsonify({"success": False, "message": "Invalid ID range"}), 400
+
+        # Perform deletion
+        deleted_count = (
+            Participant.query
+            .filter(Participant.id >= start_id, Participant.id <= end_id)
+            .delete(synchronize_session=False)
+        )
+        db.session.commit()
+
+        remaining = Participant.query.count()
+        logger.info(
+            f"Deleted {deleted_count} participants in ID range {start_id}-{end_id}. Remaining: {remaining}"
+        )
+
+        return jsonify({
+            "success": True,
+            "message": f"{deleted_count} participants deleted (IDs {start_id}-{end_id}).",
+            "remaining": remaining
+        })
+    except Exception as e:
+        logger.error(f"Error deleting range: {str(e)}")
+        db.session.rollback()
+        return jsonify({"success": False, "error": str(e)}), 500
+
 # Only call this when explicitly running this file
 if __name__ == "__main__":
     app.run(debug=True)
