@@ -3,7 +3,7 @@
     src: url(/fontes/Roboto-Italic-VariableFont_wdth\,wght.ttf);
 }
 
-/* Reset geral */
+/* General reset */
 body {
     font-family: Roboto, sans-serif;
     display: flex;
@@ -11,33 +11,38 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: #0073E6; /* Fundo azul vibrante */
+    background-color: #0073E6; /* Vibrant blue background */
     margin: 0;
+    margin-top: 100px; /* Prevent content from being hidden under the fixed logo */
 }
 
 /* Logo */
 .logo-container {
-    margin-bottom: 10px;
-    display:flex ;
+    position: fixed; /* Keeps logo fixed at the top */
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: white; /* Makes logo visible when scrolling */
+    z-index: 1000;
+    padding: 10px 0;
+    text-align: center;
 }
 
 .logo {
-    width: 150px; /* Tamanho ajustado da logo */
-    height: auto;
-    margin-top: 0px;
-    display: flex;
+    height: 60px; /* Adjust logo height */
+    width: auto;
 }
 
-/* Container do texto */
+/* Text container */
 .text-container {
-    background-color: #29A7F1; /* Azul levemente mais claro */
+    background-color: #29A7F1; /* Slightly lighter blue */
     padding: 20px;
-    width: 320px; /* Mesmo tamanho da imagem */
+    width: 320px; /* Same width as the image */
     border-radius: 10px;
     text-align: center;
 }
 
-/* Título principal */
+/* Main title */
 .form-title {
     color: white;
     font-size: 18px;
@@ -47,7 +52,7 @@ body {
     margin-bottom: 15px;
 }
 
-/* Texto principal em português */
+/* Main text in Spanish */
 .form-text {
     color: white;
     font-size: 14px;
@@ -56,7 +61,7 @@ body {
     margin-bottom: 15px;
 }
 
-/* Destaque para "BOA SORTE!" */
+/* Highlight for "BUENA SUERTE!" */
 .form-highlight {
     color: white;
     font-size: 16px;
@@ -66,7 +71,7 @@ body {
     margin-top: 15px;
 }
 
-/* Texto em inglês */
+/* English subtext */
 .form-subtext {
     text-align: center;
     font-size: 13px;
@@ -75,6 +80,6 @@ body {
 }
 
 .english-text {
-    color: #004080; /* Azul escuro para o texto em inglês */
+    color: #004080; /* Dark blue for English text */
     font-size: 13px;
 }
