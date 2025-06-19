@@ -22,11 +22,12 @@ body {
     top: 0;
     left: 0;
     width: 100%;
-    background-color: white; /* Makes logo visible when scrolling */
+    background-color: #0073E6; /* Match the page's blue background */
     z-index: 1000;
     padding: 10px 0;
     text-align: center;
 }
+
 
 .logo {
     height: 60px; /* Adjust logo height */
